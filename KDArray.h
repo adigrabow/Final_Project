@@ -5,5 +5,8 @@
  *      Author: adigrabow
  */
 
-typedef struct SPKDArray* kdArray;
 
+
+typedef struct SPKDArray* kdArray;
+kdArray init(SPPoint* arr, int size);
+int coorCompare(const void * a, const void* b);

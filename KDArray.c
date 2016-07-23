@@ -13,7 +13,7 @@
 #include <assert.h>
 #include "KDArray.h"
 
-int coor = 0; /* global? */
+int COOR = 0; /* global? */
 
 
 struct SPKDArray{
@@ -32,7 +32,7 @@ kdArray init(SPPoint* arr, int size){
 
 	array->size = size;
 	array->pointArray = arr;
-	array->dim = arr[0]->dim;
+	array->dim = spPointGetDimension(arr[0]);
 
 	int** mat = (int**)malloc(sizeof(int*)*(array->dim));
 	if(mat == NULL){
@@ -48,7 +48,7 @@ kdArray init(SPPoint* arr, int size){
 				free(mat);
 				return NULL;
 		}
-		coor = i;
+		COOR = i;
 		qsort(array->pointArray, array->size, sizeof(SPPoint), coorCompare);
 		/* make sure that "index" field of SPPoint is the same as the order-index of the input array (Maayan knows :) )    */
 		/* we changed pointArray - is this OKAY?*/
@@ -65,16 +65,19 @@ kdArray init(SPPoint* arr, int size){
 }
 
 int coorCompare(const void * a, const void* b){
-	SPPoint** p1 = (SPPoint**) a;
-	SPPoint** p2 = (SPPoint**) b;
-	double d1 = p1->data[coor];
-	double d2 = p2->data[coor];
-	if(d1 > d1)
-		return 1;
-	else if(d1 < d2)
-		return -1;
-	return 0;
+	SPPoint* p1 = (SPPoint*) a;
+	SPPoint* p2 = (SPPoint*) b;
+
+	return compareSPPoints(*p1,*p2,COOR);
 
 }
+
+int compareSPPoints(SPPoint p1, SPPoint p2 , int coordinate){
+
+	return (p1->data[coordinate]) - (p2->data[coordinate]);
+
+}
+
+
 
 
