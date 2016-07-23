@@ -20,11 +20,11 @@ struct SPKDArray{
 	SPPoint* pointArray;
 	int size;
 	int dim; /*num of dimensions of KD-Tree (=num of coor of each point)*/
-	int** mat; /* this is the d*size array that will be sorted by the coor of each row*/
+	int** mat; /* this is the d*size 2d-array that will be sorted by the coor of each row*/
 };
 
 
-kdArray init(SPPoint* arr, int size){
+kdArray Init(SPPoint* arr, int size){
 	kdArray array = (kdArray)malloc(sizeof(struct SPKDArray));
 	if(array == NULL){
 		return NULL;
@@ -54,7 +54,8 @@ kdArray init(SPPoint* arr, int size){
 		/* we changed pointArray - is this OKAY?*/
 
 		for(int j = 0; j < size; j++){
-			mat[i][j] = array->pointArray[j]->index;
+			mat[i][j] = spPointGetIndex(array->pointArray[j]);
+				//	array->pointArray[j]->index;
 
 			}
 		}
@@ -74,7 +75,7 @@ int coorCompare(const void * a, const void* b){
 
 int compareSPPoints(SPPoint p1, SPPoint p2 , int coordinate){
 
-	return (p1->data[coordinate]) - (p2->data[coordinate]);
+	return (spPointGetAxisCoor(p1,coordinate) - spPointGetAxisCoor(p2,coordinate));
 
 }
 
