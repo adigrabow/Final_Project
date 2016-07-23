@@ -10,3 +10,5 @@
 typedef struct SPKDArray* kdArray;
 kdArray init(SPPoint* arr, int size);
 int coorCompare(const void * a, const void* b);
+int compareSPPoints(SPPoint p1, SPPoint p2 , int coordinate);
+int** getMatrixFromKDArray(kdArray arr);

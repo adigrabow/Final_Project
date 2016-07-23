@@ -1,6 +1,8 @@
 #ifndef SPPOINT_H_
 #define SPPOINT_H_
 
+extern int COOR;
+
 /**
  * SPPoint Summary
  * Encapsulates a point with variable length dimension. The coordinates
