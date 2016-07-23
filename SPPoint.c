@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
+#include <string.h>
 
 
 struct sp_point_t{
@@ -68,7 +69,7 @@ double spPointGetAxisCoor(SPPoint point, int axis){
 		printf("given point is NULL\n");
 	}
 	if(axis < point->dim){
-		printf("axis < point->dim");
+		printf("axis < point->dim\n");
 	}
 	assert (point != NULL && axis < point->dim);
 

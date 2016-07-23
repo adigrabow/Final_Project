@@ -114,6 +114,13 @@ int** getMatrixFromKDArray(kdArray arr){
 	return arr->mat;
 }
 
+int getDimFromKDArray(kdArray arr){
+	assert(arr != NULL);
+	return arr->dim;
+}
+
+
+
 
 
 
