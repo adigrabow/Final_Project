@@ -289,7 +289,8 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 	memcpy(copiedPointArr,arr->pointArray, sizeof(SPPoint)* arr->size);
 
 	kdArray array = (kdArray)malloc(sizeof(struct SPKDArray)); /* output array */
-	if(array == NULL){ /* Allocation error */
+	if(!array){ /* Allocation error */
+		free(copiedPointArr);
 		return NULL;
 	}
 
@@ -309,10 +310,13 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 	}
 	array->pointArray = pointArr;
 
+
 	array->dim = spPointGetDimension(copiedPointArr[0]);
 
 	int** mat = (int**)malloc(sizeof(int*)*(array->dim));
 	if(mat == NULL){
+		free(copiedPointArr);
+		free(pointArr);
 		free(array);
 		return NULL;
 	}
@@ -323,6 +327,9 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 			for (int k=0;k<i;k++){
 				free(mat[k]);
 			}
+			free(copiedPointArr);
+			free(pointArr);
+			free(array);
 			free(mat);
 			return NULL;
 		}
@@ -333,11 +340,18 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 		}
 
 	}
-
+	/* maybe now we can use free(copiedPointArr) ?? */
 
 	array->mat = mat;
 	return array;
 
+}
+
+void destroyKdArray(kdArray arr){
+
+	free(arr->pointArray);
+
+	free(arr);
 }
 
 
