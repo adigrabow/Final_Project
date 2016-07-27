@@ -14,7 +14,9 @@
 #include <assert.h>
 #include <string.h>
 
-/* Note: the name we need to define is KDTreeNode. Maybe the typedef is wrong? */
+/* Note: the name we need to define is KDTreeNode. Maybe the typedef is wrong?
+ * spKDTreeSplitMethod should be part of the config struct.
+ * */
 struct KDTreeNode{
 	int dim; /* The splitting dimension */
 	double val; /* The median value of the splitting dimension */
@@ -24,7 +26,33 @@ struct KDTreeNode{
 };
 
 kdTree init(void){ /*what are the arguments? */
-	Init(SPPoint* arr, int size)
+	kdArray kdArr;
+	//TODO = Init( arr, size); /* Maybe it is needed to create arr first? Where? */
 
+	/* if array size is 1 then create node and return it */
+	if (kdArr->size == 1){ /* use getter instead */
+		kdTree node = (kdTree)malloc(sizeof(struct KDTreeNode));
+		if(node == NULL){
+			return NULL;
+		}
+		node->dim = -1;
+		node->val = -1.0;
+		node->left = NULL;
+		node->right = NULL;
+		node->data = (kdArr->pointArray); /* pointArray is an array that is a pointer to point */
+		return node;
+	}
+	double * spreadArray; /* will contain all spreades  */
+	int i;
+	/* if array size is bigger than 1 then create tree recursively */
+	/* I assume that in this parameter from config struct is the requester split method */
+	if (spKDTreeSplitMethod == MAX_SPREAD){
+
+		/* create spreadArray */
+		for (i=0; i< getDimFromKDArray(kdArr); i++){
+			spreadArray[i] = kdArr->pointArray[ getMatrixFromKDArray[i][0]]->data[i] -
+							 kdArr->pointArray[ getMatrixFromKDArray[i][kdArr->size -1]]->data[i];
+		}
+	}
 
 }

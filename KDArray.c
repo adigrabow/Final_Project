@@ -348,9 +348,11 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 }
 
 void destroyKdArray(kdArray arr){
-
+	for(int i = 0; i < array->dim; i++){
+		free(arr->mat[i]);
+	}
+	free(arr->mat);
 	free(arr->pointArray);
-
 	free(arr);
 }
 
