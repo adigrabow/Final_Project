@@ -5,7 +5,7 @@
  *      Author: adigrabow
  */
 
-
+#include "SPPoint.h"
 
 typedef struct SPKDArray* kdArray;
 
