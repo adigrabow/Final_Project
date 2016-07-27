@@ -17,7 +17,5 @@ int** getMatrixFromKDArray(kdArray arr);
 int getDimFromKDArray(kdArray arr);
 
 kdArray * Split(kdArray kdArr, int coor);
-
 kdArray initFromSplit(kdArray arr, int* X,int * map,int side);
-
 void destroyKdArray(kdArray arr);

@@ -73,7 +73,6 @@ kdArray Init(SPPoint* arr, int size){
 
 		for(int j = 0; j < size; j++){
 			mat[i][j] = spPointGetIndex(array->pointArray[j]);
-				//	array->pointArray[j]->index;
 
 			}
 		printf("Init after for with index\n");
