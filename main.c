@@ -29,11 +29,11 @@ int main(){
 	double data5[2]= {3.0,4.0};
 
 
-	SPPoint p1 = spPointCreate(data1, 2, 1);
-	SPPoint p2 = spPointCreate(data2, 2, 2);
-	SPPoint p3 = spPointCreate(data3, 2, 3);
-	SPPoint p4 = spPointCreate(data4, 2, 4);
-	SPPoint p5 = spPointCreate(data5, 2, 5);
+	SPPoint p1 = spPointCreate(data1, 2, 0);
+	SPPoint p2 = spPointCreate(data2, 2, 1);
+	SPPoint p3 = spPointCreate(data3, 2, 2);
+	SPPoint p4 = spPointCreate(data4, 2, 3);
+	SPPoint p5 = spPointCreate(data5, 2, 4);
 
 
 	SPPoint SPPointArr[5] = {p1,p2,p3,p4,p5};

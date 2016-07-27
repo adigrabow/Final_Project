@@ -73,7 +73,6 @@ kdArray Init(SPPoint* arr, int size){
 
 		for(int j = 0; j < size; j++){
 			mat[i][j] = spPointGetIndex(array->pointArray[j]);
-				//	array->pointArray[j]->index;
 
 			}
 		printf("Init after for with index\n");
@@ -145,7 +144,6 @@ int getDimFromKDArray(kdArray arr){
 /* important comments:
  * Add documentation in header file.
  * init:
- * 	1. init function should start with "I" by PDF
  * 	2. Check invalid arguments at first.
  * 	3. Create destroy function.
  * 	4. I included point.c because eclipse didn't recognize the struct.
@@ -348,7 +346,8 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 }
 
 void destroyKdArray(kdArray arr){
-	for(int i = 0; i < array->dim; i++){
+
+	for(int i = 0; i < array->dim; i++){ //maybe arr->dim ?
 		free(arr->mat[i]);
 	}
 	free(arr->mat);
