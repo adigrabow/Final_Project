@@ -65,15 +65,15 @@ int spPointGetIndex(SPPoint point){
 }
 
 double spPointGetAxisCoor(SPPoint point, int axis){
-	if(point == NULL){
+/*	if(point == NULL){
 		printf("given point is NULL\n");
 	}
 	if(axis >= point->dim){
 		printf("axis >= point->dim\n");
-	}
+	}*/
 	assert (point != NULL && axis < point->dim);
 
-	printf("spPointGetAxisCoor: %f\n",point->data[axis]);
+//	printf("spPointGetAxisCoor: %f\n",point->data[axis]);
 	return point->data[axis];
 }
 

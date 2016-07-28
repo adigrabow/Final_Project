@@ -13,15 +13,22 @@
 #include "KDArray.h"
 
 
-void testForMemCpy();
+void MemCpyTest();
 void printMatrix(int** mat, int numOfPoints, int dim);
 void printKDArray(kdArray arr, int size);
+void simpleInitTest();
+void splitTest1();
 
 int main(){
 
+	//simpleInitTest();
+	void splitTest1();
+	printf("finished main!\n");
+	return 0;
+}
 
-	//testForMemCpy();
-	printf("entered main\n");
+void simpleInitTest(){
+
 	double data1[2] = {1.0,2.0};
 	double data2[2]= {123.0,70.0};
 	double data3[2]= {2.0,7.0};
@@ -37,17 +44,15 @@ int main(){
 
 
 	SPPoint SPPointArr[5] = {p1,p2,p3,p4,p5};
-	printf("before Init\n");
 	kdArray resultArray = Init(SPPointArr , 5);
-	printf("after Init\n");
 
 	printMatrix(getMatrixFromKDArray(resultArray), 5, 2);
 
-	printf("finished main!\n");
-	return 0;
+	return;
 }
 
-void testForMemCpy(){
+
+void MemCpyTest(){
 
 	double data1[4] = {1.1,2.2,3.3,4.4};
 	double data2[4]= {5.5,6.6,7.7,8.8};
@@ -74,7 +79,6 @@ void testForMemCpy(){
 
 
 void printMatrix(int** mat, int numOfPoints, int dim){
-	printf("entered printMatrix\n");
 	for(int i = 0; i < dim ; i++){
 		printf("row %d: ",i);
 		for(int j = 0 ; j < numOfPoints; j++){
@@ -84,7 +88,7 @@ void printMatrix(int** mat, int numOfPoints, int dim){
 	}
 }
 
-void testSplit1(){
+void splitTest1(){
 	double data1[2] = {1.0,2.0};
 	double data2[2]= {123.0,70.0};
 	double data3[2]= {2.0,7.0};
@@ -92,14 +96,26 @@ void testSplit1(){
 	double data5[2]= {3.0,4.0};
 
 
-	SPPoint p1 = spPointCreate(data1, 2, 1);
-	SPPoint p2 = spPointCreate(data2, 2, 2);
-	SPPoint p3 = spPointCreate(data3, 2, 3);
-	SPPoint p4 = spPointCreate(data4, 2, 4);
-	SPPoint p5 = spPointCreate(data5, 2, 5);
+	SPPoint p1 = spPointCreate(data1, 2, 0);
+	SPPoint p2 = spPointCreate(data2, 2, 1);
+	SPPoint p3 = spPointCreate(data3, 2, 2);
+	SPPoint p4 = spPointCreate(data4, 2, 3);
+	SPPoint p5 = spPointCreate(data5, 2, 4);
+
 
 	SPPoint SPPointArr[5] = {p1,p2,p3,p4,p5};
 	kdArray resultArray = Init(SPPointArr , 5);
+
+	printf("before split\n");
+
+	kdArray * TwoKDArrays = Split(resultArray, 1);
+
+	printf("done split test\n");
+	printMatrix(getMatrixFromKDArray(TwoKDArrays[0]), 3, 2);
+	printMatrix(getMatrixFromKDArray(TwoKDArrays[1]), 2, 2);
+
+
+
 //	kdArray leftKD = split(...)
 	//sprintKDArray(leftKD, (resultArray->size)/2);
 

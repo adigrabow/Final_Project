@@ -28,8 +28,6 @@ struct SPKDArray{
 kdArray Init(SPPoint* arr, int size){
 	/*Copy the array you received in the init function*/
 
-	printf("entered Init\n");
-
 	SPPoint* copiedArr = (SPPoint*)malloc(sizeof(SPPoint)* size);
 	memcpy(copiedArr,arr, sizeof(SPPoint)* size);
 
@@ -65,7 +63,6 @@ kdArray Init(SPPoint* arr, int size){
 
 		qsort(array->pointArray, array->size, sizeof(SPPoint), coorCompare);
 
-		printf("Init after qsort\n");
 
 		/* make sure that "index" field of SPPoint is the same as the order-index of the input array (Maayan knows :) )    */
 		/* we changed pointArray - is this OKAY?*/
@@ -75,7 +72,6 @@ kdArray Init(SPPoint* arr, int size){
 			mat[i][j] = spPointGetIndex(array->pointArray[j]);
 
 			}
-		printf("Init after for with index\n");
 
 		}
 	//printf("finished Init\n");
@@ -86,7 +82,6 @@ kdArray Init(SPPoint* arr, int size){
 }
 
 int coorCompare(const void * a, const void* b){
-	printf("entered coorCompare\n");
 
 	SPPoint p1 = *(SPPoint*) a;
 	SPPoint p2 = *(SPPoint*) b;
@@ -344,6 +339,7 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 	return array;
 
 }
+/*
 
 void destroyKdArray(kdArray arr){
 
@@ -354,5 +350,6 @@ void destroyKdArray(kdArray arr){
 	free(arr->pointArray);
 	free(arr);
 }
+*/
 
 
