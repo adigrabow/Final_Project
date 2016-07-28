@@ -12,7 +12,7 @@
 #include <math.h>
 #include <assert.h>
 #include "KDArray.h"
-
+ /*new test file*/
 
 void MemCpyTest();
 void printMatrix(int** mat, int numOfPoints, int dim);
