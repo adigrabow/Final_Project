@@ -13,6 +13,7 @@
 #include <math.h>
 #include <assert.h>
 #include <string.h>
+#include <time.h>
 
 /* Note: the name we need to define is KDTreeNode. Maybe the typedef is wrong?
  * spKDTreeSplitMethod should be part of the config struct.
@@ -54,8 +55,8 @@ kdTree init(kdArray kdArr){
 
 		/* create spreadArray */
 		for (i=0; i< getDimFromKDArray(kdArr); i++){
-			spreadArray[i] = kdArr->pointArray[ getMatrixFromKDArray[i][0]]->data[i] -
-					kdArr->pointArray[ getMatrixFromKDArray[i][kdArr->size -1]]->data[i];
+			spreadArray[i] = kdArr->pointArray[ getMatrixFromKDArray(kdArr)[i][0]]->data[i] -
+								kdArr->pointArray[ getMatrixFromKDArray(kdArr)[i][kdArr->size -1]]->data[i];
 
 			if (spreadArray[i] >= max){ /* find max spread from array */
 				max = spreadArray[i];
@@ -72,7 +73,6 @@ kdTree init(kdArray kdArr){
 	}
 
 	if (spKDTreeSplitMethod == RANDOM){
-		srand(time(NULL)); /*requested once in program. maybe move to main? */
 		index = (int) (((double)((getDimFromKDArray(kdArr))/RAND_MAX) * rand() + 0));
 	}
 
