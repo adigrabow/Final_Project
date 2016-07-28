@@ -1,9 +1,10 @@
 /*
- * main.c
+ * test.c
  *
- *  Created on: Jul 23, 2016
+ *  Created on: Jul 28, 2016
  *      Author: adigrabow
  */
+
 #include "SPPoint.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -126,4 +127,3 @@ void printKDArray(kdArray arr, int size){
 	printMatrix(getMatrixFromKDArray(arr), size, getDimFromKDArray(arr));
 	return;
 }
-
