@@ -15,6 +15,8 @@ int coorCompare(const void * a, const void* b);
 int compareSPPoints(SPPoint p1, SPPoint p2 , int coordinate);
 int** getMatrixFromKDArray(kdArray arr);
 int getDimFromKDArray(kdArray arr);
+SPPoint* getPointArrayFromKDArray(kdArray arr);
+int getSizeFromKDArray(kdArray arr);
 
 kdArray * Split(kdArray kdArr, int coor);
 kdArray initFromSplit(kdArray arr, int* X,int * map,int side);

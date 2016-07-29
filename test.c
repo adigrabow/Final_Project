@@ -22,8 +22,9 @@ void splitTest1();
 
 int main(){
 
-	//simpleInitTest();
-	void splitTest1();
+	simpleInitTest();
+	splitTest1();
+
 	printf("finished main!\n");
 	return 0;
 }
@@ -107,18 +108,12 @@ void splitTest1(){
 	SPPoint SPPointArr[5] = {p1,p2,p3,p4,p5};
 	kdArray resultArray = Init(SPPointArr , 5);
 
-	printf("before split\n");
 
-	kdArray * TwoKDArrays = Split(resultArray, 1);
+	kdArray * TwoKDArrays = Split(resultArray, 0);
 
-	printf("done split test\n");
 	printMatrix(getMatrixFromKDArray(TwoKDArrays[0]), 3, 2);
 	printMatrix(getMatrixFromKDArray(TwoKDArrays[1]), 2, 2);
 
-
-
-//	kdArray leftKD = split(...)
-	//sprintKDArray(leftKD, (resultArray->size)/2);
 
 	return;
 }

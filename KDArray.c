@@ -19,18 +19,56 @@ int COOR = 0; /* global? */
 
 struct SPKDArray{
 	SPPoint* pointArray;
-	int size;
+	int size; /*the number of points int pointArray*/
 	int dim; /*num of dimensions of KD-Tree (=num of coor of each point)*/
 	int** mat; /* this is the d*size 2d-array that will be sorted by the coor of each row*/
 };
+
+/*getters*/
+
+int getSizeFromKDArray(kdArray arr){
+	assert(arr != NULL);
+	return arr->size;
+}
+
+SPPoint* getPointArrayFromKDArray(kdArray arr){
+	if(arr == NULL){
+		printf("arr == NULL\n");
+	}
+	assert(arr != NULL);
+	return arr->pointArray;
+}
+
+int** getMatrixFromKDArray(kdArray arr){
+	assert(arr != NULL);
+	return arr->mat;
+}
+
+int getDimFromKDArray(kdArray arr){
+	assert(arr != NULL);
+	return arr->dim;
+}
 
 
 kdArray Init(SPPoint* arr, int size){
 	/*Copy the array you received in the init function*/
 
+
+
 	SPPoint* copiedArr = (SPPoint*)malloc(sizeof(SPPoint)* size);
+	if(!copiedArr){
+		return NULL;
+
+	}
 	memcpy(copiedArr,arr, sizeof(SPPoint)* size);
 
+	SPPoint* tempArray = (SPPoint*)malloc(sizeof(SPPoint)* size);
+	if(!tempArray){
+		return NULL;
+
+	}
+
+	memcpy(tempArray,arr, sizeof(SPPoint)* size);
 
 	kdArray array = (kdArray)malloc(sizeof(struct SPKDArray));
 	if(array == NULL){
@@ -61,7 +99,7 @@ kdArray Init(SPPoint* arr, int size){
 		COOR = i;
 		//printf("Init before qsort\n");
 
-		qsort(array->pointArray, array->size, sizeof(SPPoint), coorCompare);
+		qsort(tempArray, array->size, sizeof(SPPoint), coorCompare);
 
 
 		/* make sure that "index" field of SPPoint is the same as the order-index of the input array (Maayan knows :) )    */
@@ -69,14 +107,23 @@ kdArray Init(SPPoint* arr, int size){
 
 
 		for(int j = 0; j < size; j++){
-			mat[i][j] = spPointGetIndex(array->pointArray[j]);
+			mat[i][j] = spPointGetIndex(tempArray[j]);
 
 			}
 
 		}
 	//printf("finished Init\n");
 
+	for (int j=0; j< size; j++){
+			/*	P1[i] = kdArr->pointArray[j];*/
+	//		printf("Init: pointArray[%d] = %d\n", j, spPointGetIndex((getPointArrayFromKDArray(array))[j]));
+			//printf("Init: pointArray[%d] = %d\n", j, spPointGetIndex(tempArray[j]));
+
+	}
+
+
 	array->mat = mat;
+//	free(tempArray);
 	return array;
 
 }
@@ -124,16 +171,6 @@ int compareSPPoints(SPPoint p1, SPPoint p2 , int coordinate){
 
 
 
-int** getMatrixFromKDArray(kdArray arr){
-	assert(arr != NULL);
-	return arr->mat;
-}
-
-int getDimFromKDArray(kdArray arr){
-	assert(arr != NULL);
-	return arr->dim;
-}
-
 
 
 /* important comments:
@@ -153,14 +190,25 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 		return NULL;
 	}
 
+	SPPoint point = getPointArrayFromKDArray(kdArr)[0];
+
+	SPPoint* P = (SPPoint*)malloc(sizeof(SPPoint)* getSizeFromKDArray(kdArr));
+	if(!P){
+		return NULL;
+	}
+	memcpy(P,getPointArrayFromKDArray(kdArr), sizeof(SPPoint)* getSizeFromKDArray(kdArr));
+
 	kdArray * result = (kdArray*) malloc(sizeof(struct SPKDArray) * 2); /* result array will include left and right array */
 	if (!result) { /* Allocation error */
 		return NULL;
 	}
-	int size = kdArr->size;
+
+
+	int size = getSizeFromKDArray(kdArr);
 	int halfIndex = (size + 1) / 2; /* half is index n/2 rounded up */
 	int flag = 0; /* for creating maps : 0=not found in pi, else 1 */
 	//TODO for all the arrays: maybe use malloc?
+
 
 	int * X = (int *) malloc(sizeof(int)*size);
 	if (!X) { /* Allocation error */
@@ -183,40 +231,76 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 		return NULL;
 	}
 
-	SPPoint * P1;
-	SPPoint * P2;
+	SPPoint * P1 = (SPPoint*)malloc(halfIndex * sizeof(SPPoint));
+	SPPoint * P2 = (SPPoint*)malloc((size - halfIndex) * sizeof(SPPoint));
 	kdArray Left;
 	kdArray Right;
 	int i;
+
 	/* if (side = 0) the we build the left half, (side = 1) for the right side. Used in initFromSplit(X,map-i,side) */
 	int side;
-
 	for (int i=0; i<size; i++){ /* Build X array */ /* use getMatrix instead of kdArr->mat */
-		if (i< halfIndex) /* elements in Left */
-			X[ (kdArr->mat[coor][i]) ] = 0 ;
-		else /* elements in Right */
-			X[ (kdArr->mat[coor][i]) ] = 1 ;
+		if (i< halfIndex){
+			/* elements in Left */
+			X[(getMatrixFromKDArray(kdArr))[coor][i]] = 0;
+
+			/*X[ (kdArr->mat[coor][i]) ] = 0 ;*/
+		}
+		else{ /* elements in Right */
+			X[(getMatrixFromKDArray(kdArr))[coor][i]] = 1 ;
+		}
 	}
+
+	/*printing X*/
+	printf("X: ");
+	for(int k = 0; k < size; k++){
+		printf("%d, ",X[k]);
+	}
+	printf("\n");
 
 
 	//for (int i=0; i<halfIndex; i++){ /* size of P1 is halfIndex */
 	//P1[i] = kdArr->pointArray(kdArr->mat[coor][i]);
 
 	/* Build P1, P2  - arrays including left and right, elements are points */
-	i=0;
+
 	for (int j=0; j< size; j++){
+		/*	P1[i] = kdArr->pointArray[j];*/
+//		printf("split: pointArray[%d] = %d\n", j, spPointGetIndex(P[j]));
+
+	}
+
+
+	i=0;
+	int k = 0;
+	for (int j = 0; j < size; j++){
 		if (X[j] == 0){
-			P1[i] = kdArr->pointArray[j];
+		/*	P1[i] = kdArr->pointArray[j];*/
+//			printf("pointArray[%d] = %d\n", j, spPointGetIndex((getPointArrayFromKDArray(kdArr))[j]));
+		    P1[i] = P[j];
+		//	P1[i] = getPointArrayFromKDArray(kdArr)[j];
 			i++;
+
+		}else{
+			P2[k] = P[j];
+			k++;
 		}
 	}
-	i=0;
-	for (int j=0; j< size; j++){
-		if (X[j] == 1){
-			P2[i] = kdArr->pointArray[j];
-			i++;
-		}
+
+	/*printing P1*/
+	printf("P1: ");
+	for(int k = 0; k < 3; k++){
+		printf("%d, ",spPointGetIndex(P1[k]));
 	}
+	printf("\n");
+
+
+	/*printing P2*/
+	printf("P2: ");
+	for(int k = 0; k < 2; k++){
+		printf("%d, ",spPointGetIndex(P2[k]));
+	}
+	printf("\n");
 
 
 	/* Build map1, map2 - arrays including indexes of points if point is in map-i and (-1) otherwise */
@@ -234,6 +318,12 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 		}
 
 	}
+	printf("map1: ");
+	for(int m = 0; m < size; m++){
+		printf("%d, ",map1[m]);
+	}
+	printf("\n");
+
 
 	for (int i=0; i<size; i++){ /* map2 */
 		flag = 0; /* at the beginning of iteration - point not found yet */
@@ -249,6 +339,12 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 
 	}
 
+	printf("map2: ");
+	for(int m = 0; m < size; m++){
+		printf("%d, ",map2[m]);
+	}
+	printf("\n");
+
 	/* Build left and right */
 	side = 0; /* indicator for left side in init function */
 	Left = initFromSplit(kdArr,X,map1,side); /* create Left */
@@ -259,6 +355,7 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	free(X);
 	free(map1);
 	free(map2);
+	free(P);
 
 	/* update result */
 	result[0] = Left;
@@ -297,13 +394,13 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 		}
 
 	/* for each index in X - if (X[i] == side ) then pointArr[ map[i] ] =  copiedPointArr[i] */
-	for (i=0;i<arr->size;i++){
-		if (X[i] == side)
-			pointArr[ map[i] ] =  copiedPointArr[i];
+	for (i = 0;i < (arr->size);i++){
+		if (X[i] == side){
+			pointArr[map[i]] = copiedPointArr[i];
+		}
 	}
+
 	array->pointArray = pointArr;
-
-
 	array->dim = spPointGetDimension(copiedPointArr[0]);
 
 	int** mat = (int**)malloc(sizeof(int*)*(array->dim));
@@ -326,13 +423,29 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 			free(mat);
 			return NULL;
 		}
-
-		for(int j = 0; j < size; j++){ /* insert updated indexes (according to p1 or p2) to the new mat */
-			mat[i][j] = map[ arr->mat[i][j] ];
-
-		}
-
 	}
+
+	int row = -1, col = 0;
+	for(int i = 0; i < arr->dim ; i++){
+		col = 0;
+		row++;
+		for(int j = 0; j < arr->size ; j++){
+			/*build right side*/
+			if((X[arr->mat[i][j]] == 1) && (side == 1)){
+				mat[row][col] = map[arr->mat[i][j]];
+				col++;
+
+			}
+			/*build left side*/
+			if(X[arr->mat[i][j]] == 0 && (side == 0)){
+				mat[row][col] = map[arr->mat[i][j]];
+				col++;
+			}
+		}
+	}
+
+
+
 	/* maybe now we can use free(copiedPointArr) ?? */
 
 	array->mat = mat;
