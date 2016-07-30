@@ -51,37 +51,46 @@ int getDimFromKDArray(kdArray arr){
 
 
 kdArray Init(SPPoint* arr, int size){
+
+	if(arr == NULL){
+		//printf("input array is NULL, Exiting...\n");
+		return NULL;
+	}
+
+	if(size <= 0){
+		return NULL;
+	}
+
+
 	/*Copy the array you received in the init function*/
-
-
-
 	SPPoint* copiedArr = (SPPoint*)malloc(sizeof(SPPoint)* size);
 	if(!copiedArr){
 		return NULL;
-
 	}
 	memcpy(copiedArr,arr, sizeof(SPPoint)* size);
 
 	SPPoint* tempArray = (SPPoint*)malloc(sizeof(SPPoint)* size);
 	if(!tempArray){
+		free(copiedArr);
 		return NULL;
-
 	}
-
 	memcpy(tempArray,arr, sizeof(SPPoint)* size);
 
 	kdArray array = (kdArray)malloc(sizeof(struct SPKDArray));
 	if(array == NULL){
+		free(copiedArr);
+		free(tempArray);
 		return NULL;
 	}
 
 	array->size = size;
 	array->pointArray = copiedArr;
-
 	array->dim = spPointGetDimension(copiedArr[0]);
 
 	int** mat = (int**)malloc(sizeof(int*)*(array->dim));
 	if(mat == NULL){
+		free(copiedArr);
+		free(tempArray);
 		free(array);
 		return NULL;
 		}
@@ -92,38 +101,26 @@ kdArray Init(SPPoint* arr, int size){
 			 for (int k=0;k<i;k++){
 				free(mat[k]);
 				}
-				free(mat);
-				return NULL;
+			 free(copiedArr);
+			 free(tempArray);
+			 free(array);
+			 free(mat);
+			 return NULL;
 		}
 
 		COOR = i;
-		//printf("Init before qsort\n");
-
 		qsort(tempArray, array->size, sizeof(SPPoint), coorCompare);
-
-
 		/* make sure that "index" field of SPPoint is the same as the order-index of the input array (Maayan knows :) )    */
 		/* we changed pointArray - is this OKAY?*/
 
 
 		for(int j = 0; j < size; j++){
 			mat[i][j] = spPointGetIndex(tempArray[j]);
-
 			}
-
 		}
-	//printf("finished Init\n");
-
-	for (int j=0; j< size; j++){
-			/*	P1[i] = kdArr->pointArray[j];*/
-	//		printf("Init: pointArray[%d] = %d\n", j, spPointGetIndex((getPointArrayFromKDArray(array))[j]));
-			//printf("Init: pointArray[%d] = %d\n", j, spPointGetIndex(tempArray[j]));
-
-	}
-
 
 	array->mat = mat;
-//	free(tempArray);
+	free(tempArray);
 	return array;
 
 }

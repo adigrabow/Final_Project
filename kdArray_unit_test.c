@@ -1,7 +1,7 @@
 /*
- * test.c
+ * kdArray_unit_test.c
  *
- *  Created on: Jul 28, 2016
+ *  Created on: Jul 29, 2016
  *      Author: adigrabow
  */
 
@@ -12,18 +12,23 @@
 #include <math.h>
 #include <assert.h>
 #include "KDArray.h"
+
  /*new test file*/
 
 void MemCpyTest();
 void printMatrix(int** mat, int numOfPoints, int dim);
 void printKDArray(kdArray arr, int size);
+void printPointIndex(kdArray arr, int numOfPoints);
 void simpleInitTest();
 void splitTest1();
+void splitTest2();
+
 
 int main(){
 
-	simpleInitTest();
-	splitTest1();
+	//simpleInitTest();
+	//splitTest1();
+	splitTest2();
 
 	printf("finished main!\n");
 	return 0;
@@ -89,7 +94,7 @@ void printMatrix(int** mat, int numOfPoints, int dim){
 		printf("\n");
 	}
 }
-
+/*this is the example we were given*/
 void splitTest1(){
 	double data1[2] = {1.0,2.0};
 	double data2[2]= {123.0,70.0};
@@ -108,17 +113,59 @@ void splitTest1(){
 	SPPoint SPPointArr[5] = {p1,p2,p3,p4,p5};
 	kdArray resultArray = Init(SPPointArr , 5);
 
-
 	kdArray * TwoKDArrays = Split(resultArray, 0);
 
 	printMatrix(getMatrixFromKDArray(TwoKDArrays[0]), 3, 2);
 	printMatrix(getMatrixFromKDArray(TwoKDArrays[1]), 2, 2);
 
-
 	return;
 }
 
+
+void splitTest2(){
+	double data1[3] = {1.0,5.0,10.0};
+	double data2[3]= {2.0,4.0,20.0};
+	double data3[3]= {3.0,3.0,30.0};
+	double data4[3]= {4.0,2.0,40.0};
+	double data5[3]= {5.0,1.0,50.0};
+	double data6[3]= {6.0,0.5,60.0};
+
+
+
+	SPPoint p1 = spPointCreate(data1, 3, 0);
+	SPPoint p2 = spPointCreate(data2, 3, 1);
+	SPPoint p3 = spPointCreate(data3, 3, 2);
+	SPPoint p4 = spPointCreate(data4, 3, 3);
+	SPPoint p5 = spPointCreate(data5, 3, 4);
+	SPPoint p6 = spPointCreate(data6, 3, 5);
+
+
+	SPPoint SPPointArr[6] = {p1,p2,p3,p4,p5,p6};
+	kdArray resultArray = Init(SPPointArr , 6);
+
+	kdArray * TwoKDArrays = Split(resultArray, 0);
+	printf("left kdArray matrix: \n");
+	printMatrix(getMatrixFromKDArray(TwoKDArrays[0]), 3, 3);
+	printf("right kdArray matrix: \n");
+	printMatrix(getMatrixFromKDArray(TwoKDArrays[1]), 3, 3);
+	printPointIndex(TwoKDArrays[0],3);
+	printPointIndex(TwoKDArrays[1],3);
+
+	return;
+
+}
 void printKDArray(kdArray arr, int size){
 	printMatrix(getMatrixFromKDArray(arr), size, getDimFromKDArray(arr));
 	return;
 }
+
+void printPointIndex(kdArray arr, int numOfPoints){
+	printf("indexes of SPPoint array: ");
+	for(int i = 0; i < numOfPoints; i++){
+		printf("%d, ",spPointGetIndex((getPointArrayFromKDArray(arr))[i]));
+	}
+	printf("\n");
+
+}
+
+
