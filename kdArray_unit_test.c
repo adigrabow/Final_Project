@@ -55,6 +55,15 @@ void simpleInitTest(){
 
 	printMatrix(getMatrixFromKDArray(resultArray), 5, 2);
 
+	spPointDestroy(p1);
+	spPointDestroy(p2);
+	spPointDestroy(p3);
+	spPointDestroy(p4);
+	spPointDestroy(p5);
+
+	destroyKdArray(resultArray);
+
+
 	return;
 }
 
@@ -81,6 +90,14 @@ void MemCpyTest(){
 	for(int i = 0; i < 3; i++){
 		printf("p%d[0] = %f\n",i,spPointGetAxisCoor(copiedArr[i], 0));
 	}
+
+
+	spPointDestroy(p1);
+	spPointDestroy(p2);
+	spPointDestroy(p3);
+	free(copiedArr);
+	free(SPPointArr);
+
 	return;
 }
 
@@ -118,6 +135,16 @@ void splitTest1(){
 	printMatrix(getMatrixFromKDArray(TwoKDArrays[0]), 3, 2);
 	printMatrix(getMatrixFromKDArray(TwoKDArrays[1]), 2, 2);
 
+
+	spPointDestroy(p1);
+	spPointDestroy(p2);
+	spPointDestroy(p3);
+	spPointDestroy(p4);
+	spPointDestroy(p5);
+
+	destroyKdArray(TwoKDArrays[0]);
+	destroyKdArray(TwoKDArrays[1]);
+
 	return;
 }
 
@@ -150,6 +177,16 @@ void splitTest2(){
 	printMatrix(getMatrixFromKDArray(TwoKDArrays[1]), 3, 3);
 	printPointIndex(TwoKDArrays[0],3);
 	printPointIndex(TwoKDArrays[1],3);
+
+	spPointDestroy(p1);
+	spPointDestroy(p2);
+	spPointDestroy(p3);
+	spPointDestroy(p4);
+	spPointDestroy(p5);
+	spPointDestroy(p6);
+
+	destroyKdArray(TwoKDArrays[0]);
+	destroyKdArray(TwoKDArrays[1]);
 
 	return;
 
