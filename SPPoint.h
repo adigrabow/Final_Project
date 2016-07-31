@@ -107,6 +107,6 @@ double spPointGetAxisCoor(SPPoint point, int axis);
  * The L2-Squared distance between p and q
  */
 double spPointL2SquaredDistance(SPPoint p, SPPoint q);
-
+double * spPointGetData(SPPoint point);
 
 #endif /* SPPOINT_H_ */
