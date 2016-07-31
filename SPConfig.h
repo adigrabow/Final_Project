@@ -23,6 +23,13 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_SUCCESS
 } SP_CONFIG_MSG;
 
+/*I Added this*/
+typedef enum sp_kdtree_split_method_t{ //TODO find out were this enum definition belongs
+	MAX_SPREAD,
+	RANDOM,
+	INCREMENTAL
+}SP_KDTREE_SPLIT_METHOD_TYPE ;
+
 typedef struct sp_config_t* SPConfig;
 
 /**
@@ -169,5 +176,12 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
  * If config == NULL nothig is done.
  */
 void spConfigDestroy(SPConfig config);
+
+
+bool isStringValid(char* string);
+bool isLineValid(char* line);
+bool isLineCommentLine(char* string);
+void getCleanWordFromString(char* string, char* word);
+
 
 #endif /* SPCONFIG_H_ */
