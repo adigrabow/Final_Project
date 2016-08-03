@@ -214,4 +214,82 @@ SP_LOGGER_MSG spLoggerPrintDebug(const char* msg, const char* file,
  */
 SP_LOGGER_MSG spLoggerPrintMsg(const char* msg);
 
+/* More Headers */
+
+/**
+ * 	Prints the error/warning/debug message when the current output channel is stdout.
+ * 	The error/warning/debug message format is given below:
+ * 	---<Headline>---
+ * 	- file: <file>
+ *  - function: <function>
+ *  - line: <line>
+ *  - message: <msg>
+ *
+ *---<Headline>--- - could be ERROR / WARNING / DEBUG, it represents the message
+ *					type being printed.
+ * 	<file> 	   - is the string given by file, it represents the file in which
+ * 		   		 the print call occurred.
+ * 	<function> - is the string given by function, it represents the function in which
+ * 			   	 the print call occurred.
+ * 	<line> 	   - is the string given by line, it represents the line in which
+ * 		   		 the print call occurred
+ * 	<msg> 	   - is the string given by msg, it contains the msg given by the user
+ *
+ *  messages will be printed at level:
+ *  SP_LOGGER_ERROR_LEVEL
+ *  SP_LOGGER_WARNING_ERROR_LEVEL
+ *	SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL
+ *
+ * 	A new line will be printed after the print call.
+ * @param typeOfMsg - A string representing the type of message
+ * @param msg     	- The message to printed
+ * @param file    	- A string representing the filename in which spLoggerPrintWarning call occurred
+ * @param function 	- A string representing the function name in which spLoggerPrintWarning call ocurred
+ * @param line		- A string representing the line in which the function call occurred
+ * @return
+ * SP_LOGGER_WRITE_FAIL			- If Write failure occurred
+ * SP_LOGGER_SUCCESS			- otherwise
+ */
+
+SP_LOGGER_MSG spLoggerGlobalPrintStdout(const char* msg, const char* file, const char* function,
+		const int line, const char*  typeOfMsg);
+
+/**
+ * 	Prints the error/warning/debug message when the current output channel is a file.
+ * 	The error/warning/debug message format is given below:
+ * 	---<Headline>---
+ * 	- file: <file>
+ *  - function: <function>
+ *  - line: <line>
+ *  - message: <msg>
+ *
+ *---<Headline>--- - could be ERROR / WARNING / DEBUG, it represents the message
+ *					type being printed.
+ * 	<file> 	   - is the string given by file, it represents the file in which
+ * 		   		 the print call occurred.
+ * 	<function> - is the string given by function, it represents the function in which
+ * 			   	 the print call occurred.
+ * 	<line> 	   - is the string given by line, it represents the line in which
+ * 		   		 the print call occurred
+ * 	<msg> 	   - is the string given by msg, it contains the msg given by the user
+ *
+ *  messages will be printed at level:
+ *  SP_LOGGER_ERROR_LEVEL
+ *  SP_LOGGER_WARNING_ERROR_LEVEL
+ *	SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL
+ *
+ * 	A new line will be printed after the print call.
+ * @param typeOfMsg - A string representing the type of message
+ * @param msg     	- The message to printed
+ * @param file    	- A string representing the filename in which spLoggerPrintWarning call occurred
+ * @param function 	- A string representing the function name in which spLoggerPrintWarning call ocurred
+ * @param line		- A string representing the line in which the function call occurred
+ * @return
+ * SP_LOGGER_WRITE_FAIL			- If Write failure occurred
+ * SP_LOGGER_SUCCESS			- otherwise
+ */
+
+SP_LOGGER_MSG spLoggerGlobalPrintFile(const char* msg, const char* file, const char* function,
+		const int line, const char*  typeOfMsg);
+
 #endif

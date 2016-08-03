@@ -23,7 +23,7 @@ void simpleInitTest();
 void splitTest1();
 void splitTest2();
 
-
+/*
 int main(){
 
 	//simpleInitTest();
@@ -32,7 +32,7 @@ int main(){
 
 	printf("finished main!\n");
 	return 0;
-}
+}*/
 
 void simpleInitTest(){
 

@@ -8,7 +8,7 @@
 
 
 typedef struct KDTreeNode* kdTree;
-kdTree init(kdArray kdArr);
+kdTree init(kdArray kdArr, int * index);
 
 
 

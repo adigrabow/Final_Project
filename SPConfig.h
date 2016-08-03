@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "SPLogger.h"
 
+
 /**
  * A data-structure which is used for configuring the system.
  */
@@ -56,7 +57,7 @@ typedef struct sp_config_t* SPConfig;
  *
  *
  */
-SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
+//SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
 
 /*
  * Returns true if spExtractionMode = true, false otherwise.
@@ -182,6 +183,7 @@ bool isStringValid(char* string);
 bool isLineValid(char* line);
 bool isLineCommentLine(char* string);
 void getCleanWordFromString(char* string, char* word);
-
-
+void assignValueToVariable(SPConfig config, char* variableName, char* value);
+void printVariableValuesOfConfig(SPConfig config);
+SPConfig spConfigCreate(const char* filename);//TODO remove!!!
 #endif /* SPCONFIG_H_ */
