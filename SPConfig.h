@@ -186,4 +186,5 @@ void getCleanWordFromString(char* string, char* word);
 void assignValueToVariable(SPConfig config, char* variableName, char* value);
 void printVariableValuesOfConfig(SPConfig config);
 SPConfig spConfigCreate(const char* filename);//TODO remove!!!
+void assignDefaultValues(SPConfig config);
 #endif /* SPCONFIG_H_ */

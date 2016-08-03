@@ -66,16 +66,7 @@ SPConfig spConfigCreate(const char* filename){
 		return NULL;
 	}
 
-	/*setting default values*/
-	config->spPCADimension = 20;
-	strcpy(config->spPCAFilename, "pca.yml");
-	config->spNumOfFeatures = 100;
-	config->spExtractionMode = true;
-	config->spMinimalGUI = false;
-	config->spNumOfSimilarImages = 1;
-	config->spKNN = 1;
-	config->spKDTreeSplitMethod = MAX_SPREAD;
-
+	assignDefaultValues(config);
 
 	FILE* configFile = fopen(filename, "r");
 	if(configFile == NULL){
@@ -132,6 +123,21 @@ SPConfig spConfigCreate(const char* filename){
 
 
 }
+void assignDefaultValues(SPConfig config){
+
+	config->spPCADimension = 20;
+	strcpy(config->spPCAFilename, "pca.yml");
+	config->spNumOfFeatures = 100;
+	config->spExtractionMode = true;
+	config->spMinimalGUI = false;
+	config->spNumOfSimilarImages = 1;
+	config->spKNN = 1;
+	config->spKDTreeSplitMethod = MAX_SPREAD;
+
+	return;
+}
+
+
 void printVariableValuesOfConfig(SPConfig config){
 	printf("***********printing config values***********\n");
 	if(config == NULL){
@@ -233,6 +239,12 @@ void assignValueToVariable(SPConfig config, char* variableName, char* value){
 		printf("assignValueToVariable: entered if\n");
 		strcpy(config->spLoggerFilename,value);
 	}
+	/*line is invalid (neither a comment/empty line nor system parameter configuration)*/
+	else{
+		/*ÒFile: <the configuration filename>
+Line: <the number of the invalid line>
+Message: Invalid configuration lineÓ*/
+	}
 	return;
 
 	/*
@@ -288,7 +300,6 @@ void getCleanWordFromString(char* string, char* word){
 
 	}
 	printf("END OF FUNC getCleanWordFromString: word=%s\n",word);
-
 
 }
 
@@ -412,6 +423,30 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 
 }
  */
+/*
+ * Returns true if spExtractionMode = true, false otherwise.
+ *
+ * @param config - the configuration structure
+ * @assert msg != NULL
+ * @param msg - pointer in which the msg returned by the function is stored
+ * @return true if spExtractionMode = true, false otherwise.
+ *
+ * - SP_CONFIG_INVALID_ARGUMENT - if config == NULL
+ * - SP_CONFIG_SUCCESS - in case of success
+ */
+bool spConfigIsExtractionMode(const SPConfig config, SP_CONFIG_MSG* msg){
+	assert(msg != NULL);
+	if(config == NULL){
+		*msg = SP_CONFIG_INVALID_ARGUMENT;
+		return false;
+	}
+	if(config->spExtractionMode == true){
+		*msg = SP_CONFIG_SUCCESS;
+		return true;
+	}else{
+		*msg = SP_CONFIG_SUCCESS; //TODO make sure if "false" is also considered success
+		return false;
+	}
 
-
+ }
 
