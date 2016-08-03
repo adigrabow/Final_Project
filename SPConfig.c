@@ -15,7 +15,7 @@
 #define NULL   ((void *) 0)
 #endif
 
-#define MAX_STRING_LEN 1024 /* max len of a line in config file is 1024 char */
+#define MAX_STRING_LEN 1024
 
 /*characters MACROS:*/
 #define HASH ('#')
@@ -45,14 +45,15 @@ struct sp_config_t{
 };
 
 
-/***** Functions Implementation *****/
+/* ########################
+ * Functions Implementation
+ *  ######################*/
 
 int main(){
 	SP_CONFIG_MSG* msg;
 	spConfigCreate("a.txt");
 	return 0;
 }
-
 
 
 SPConfig spConfigCreate(const char* filename){
@@ -74,7 +75,6 @@ SPConfig spConfigCreate(const char* filename){
 	config->spNumOfSimilarImages = 1;
 	config->spKNN = 1;
 	config->spKDTreeSplitMethod = MAX_SPREAD;
-
 
 
 	FILE* configFile = fopen(filename, "r");
@@ -107,10 +107,19 @@ SPConfig spConfigCreate(const char* filename){
 			}
 
 			if(valueFlag == 1){
+				printf("string = %s\n",string);
 				memset(value, 0, sizeof(value));
 				getCleanWordFromString(string, value);
 				printf("value is: %s\n", value);
 				assignValueToVariable(config, variableName, value);
+				/*				if((isStringValid(variableName) == true) && (isStringValid(value) == true)){
+					printf("both strings are valid\n");
+					assignValueToVariable(config, variableName, value);
+				}
+				else{
+					printf("string is not valid!\n");
+					return NULL;
+				}*/
 			}
 
 			string = strtok(NULL, delimiter);
@@ -124,6 +133,11 @@ SPConfig spConfigCreate(const char* filename){
 
 }
 void printVariableValuesOfConfig(SPConfig config){
+	printf("***********printing config values***********\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return;
+	}
 
 	printf("spImagesDirectory = %s\n",config->spImagesDirectory);
 	printf("spImagesPrefix = %s\n",config->spImagesPrefix);
@@ -224,51 +238,85 @@ void assignValueToVariable(SPConfig config, char* variableName, char* value){
 	/*
 	SP_KDTREE_SPLIT_METHOD_TYPE spKDTreeSplitMethod; default value= MAX_SPREAD //TODO where to implement this enum??
 	int spLoggerLevel; default value= 3 {1,2,3,4} 1:error, 2:warning, 3:info, 4:debug
-*/
+	 */
 }
 
 bool isLineValid(char* line){
 	int i = 0;
 	while(*(line+i) != '\0'){
 		if(*(line+i) == '#'){ /* # in the middle of the line is not valid!*/
-	printf("line is invalid: # in the middle of the line\n");
-	return false;
-}
-}
-return true;
+			printf("line is invalid: # in the middle of the line\n");
+			return false;
+		}
+	}
+	return true;
 }
 
 void getCleanWordFromString(char* string, char* word){
+	printf("getCleanWordFromString: string=%s, word=%s\n",string,word);
 	int firstLetterIndex = 0;
+	int lastLetterIndex = 0;
 	for(int i = 0; i < strlen(string); i++ ){
 		if((*(string + i) != WHITESPACE) && (*(string + i) != TAB)){
 			firstLetterIndex = i;
 			break;
 		}
 	}
-	//printf("getCleanWordFromString: firstLetterIndex = %d\n",firstLetterIndex);
-	int k = firstLetterIndex;
-	for(int j = 0; j < (strlen(string) - k); j++){
-		*(word + j) = *(string + firstLetterIndex);
-		firstLetterIndex++;
+	printf("firstLetterIndex = %d\n",firstLetterIndex);
+	printf("strlen(string)=%d\n",strlen(string));
+
+	lastLetterIndex = strlen(string) - 1;
+	for(int t = firstLetterIndex; t < strlen(string); t++){
+		if((*(string + t) == WHITESPACE) || (*(string + t) == TAB)){
+			printf("*(string + t) = %c\n",*(string + t));
+			//if((*(string + t)) == WHITESPACE){
+			lastLetterIndex = t;
+			break;
+		}
 	}
+	//	lastLetterIndex--;
+	printf("lastLetterIndex = %d\n",lastLetterIndex);
+
+	//printf("getCleanWordFromString: firstLetterIndex = %d\n",firstLetterIndex);
+	int newWordLengthe = lastLetterIndex - firstLetterIndex + 1;
+	printf("newWordLengthe = %d\n",newWordLengthe);
+	for(int j = 0; j < newWordLengthe; j++){
+		if(*(string + firstLetterIndex) != '\n'){
+			*(word + j) = *(string + firstLetterIndex);
+			firstLetterIndex++;
+		}
+
+	}
+	printf("END OF FUNC getCleanWordFromString: word=%s\n",word);
+
 
 }
 
 
+
 bool isStringValid(char* string){
-	int i = 1;
+	if(string == NULL){
+		printf("string is NULL\n");
+		return false;
+	}
+	int stringLength = strlen(string);
+
+	printf("isStringValid: string = %s, strlen = %d\n",string,stringLength);
+	int i = 0;
 
 	while(*(string+i) != '\0'){
-		if(*(string+i) == HASH || (*(string) == WHITESPACE) || (*(string) == TAB) ||
-				(*(string) == VERTICAL) || (*(string) == NEW_LINE)){ /* #,'\t','\r'.. in the middle of the line is not valid!*/
+		printf("isStringValid: *(string + %d) = %c\n",i,*(string+i));
+		if(*(string+i) == HASH || (*(string+i) == WHITESPACE) || (*(string + i) == TAB) ||
+				(*(string + i) == VERTICAL) || (*(string + i) == NEW_LINE)){ /* #,'\t','\r'.. in the middle of the line is not valid!*/
 			printf("isStringValid: false\n");
 			return false;
 		}
+		i++;
 	}
 	printf("isStringValid: true\n");
 	return true;
 }
+
 
 bool isLineCommentLine(char* line){
 	char c = ' ';
@@ -293,13 +341,13 @@ bool isLineCommentLine(char* line){
 SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 	assert(msg == NULL);
 	if(filename == NULL){
-		*msg = SP_CONFIG_INVALID_ARGUMENT;
+ *msg = SP_CONFIG_INVALID_ARGUMENT;
 		return NULL;
 	}
 
 	SPConfig config = (SPConfig)malloc(sizeof(SPConfig));//TODO free memory!
 	if(config == NULL){
-		*msg = SP_CONFIG_ALLOC_FAIL;
+ *msg = SP_CONFIG_ALLOC_FAIL;
 		return NULL;
 	}
 
@@ -317,7 +365,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 
 	FILE* configFile = fopen(filename, "r");
 	if(configFile == NULL){
-		*msg = SP_CONFIG_CANNOT_OPEN_FILE;
+ *msg = SP_CONFIG_CANNOT_OPEN_FILE;
 		return NULL;
 	}
 	char line[MAX_STRING_LEN];
@@ -358,12 +406,12 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 	}
 
 	printVariableValuesOfConfig(config);
-	*msg = SP_CONFIG_SUCCESS;
+ *msg = SP_CONFIG_SUCCESS;
 	return config;
 
 
 }
-*/
+ */
 
 
 
