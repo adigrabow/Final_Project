@@ -183,7 +183,7 @@ bool isStringValid(char* string);
 bool isLineValid(char* line);
 bool isLineCommentLine(char* string);
 void getCleanWordFromString(char* string, char* word);
-void assignValueToVariable(SPConfig config, char* variableName, char* value);
+void assignValueToVariable(SPConfig config, char* variableName, char* value, char* statusMSG);
 void printVariableValuesOfConfig(SPConfig config);
 SPConfig spConfigCreate(const char* filename);//TODO remove!!!
 void assignDefaultValues(SPConfig config);
