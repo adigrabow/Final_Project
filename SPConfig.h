@@ -57,7 +57,7 @@ typedef struct sp_config_t* SPConfig;
  *
  *
  */
-//SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
+SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
 
 /*
  * Returns true if spExtractionMode = true, false otherwise.
@@ -183,8 +183,11 @@ bool isStringValid(char* string);
 bool isLineValid(char* line);
 bool isLineCommentLine(char* string);
 void getCleanWordFromString(char* string, char* word);
-void assignValueToVariable(SPConfig config, char* variableName, char* value, char* statusMSG);
+void assignValueToVariable(SPConfig config, char* variableName,
+		char* value, char* statusMSG,  SP_CONFIG_MSG* msg);
+//void assignValueToVariable(SPConfig config, char* variableName, char* value, char* statusMSG);
 void printVariableValuesOfConfig(SPConfig config);
-SPConfig spConfigCreate(const char* filename);//TODO remove!!!
+//SPConfig spConfigCreate(const char* filename);//TODO remove!!!
 void assignDefaultValues(SPConfig config);
+bool isNumericValueValid(char* number);
 #endif /* SPCONFIG_H_ */
