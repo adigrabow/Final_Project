@@ -190,4 +190,14 @@ void printVariableValuesOfConfig(SPConfig config);
 //SPConfig spConfigCreate(const char* filename);//TODO remove!!!
 void assignDefaultValues(SPConfig config);
 bool isNumericValueValid(char* number);
+SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
+char* spConfigGetImageDirectory(SPConfig config);
+char* spConfigGetspImagesPrefix(SPConfig config);
+char* spConfigGetspImagesSuffix(SPConfig config);
+char* spConfigGetspPCAFilename(SPConfig config);
+char* spConfigGetspLoggerFilename(SPConfig config);
+int spConfigGetspNumOfSimilarImages(SPConfig config);
+int spConfigGetspKNN(SPConfig config);
+int spConfigGetspLoggerLevel(SPConfig config);
+SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config);
 #endif /* SPCONFIG_H_ */

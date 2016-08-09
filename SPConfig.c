@@ -52,7 +52,7 @@ struct sp_config_t{
 
 /*********************
  * image suffix values
-*********************/
+ *********************/
 #define JPG (".jpg")
 #define PNG (".png")
 #define BMP (".bmp")
@@ -79,8 +79,8 @@ struct sp_config_t{
 
 
 int main(){
-	SP_CONFIG_MSG* msg;
-	spConfigCreate("a.txt", msg);
+	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
+	spConfigCreate("a.txt", &msg);
 	return 0;
 }
 
@@ -219,24 +219,29 @@ bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG* msg){
 
 int spConfigGetNumOfImages(const SPConfig config, SP_CONFIG_MSG* msg){
 	assert(msg != NULL);
+	printf("entered spConfigGetNumOfImages\n");
 	if(config == NULL){
+		printf("config is null\n");
 		*msg = SP_CONFIG_INVALID_ARGUMENT;
 		return -1;
 	}
 
-	*msg = SP_CONFIG_SUCCESS;
+	//*(msg) = SP_CONFIG_SUCCESS;
+	printf("config->spNumOfImages = %d\n",config->spNumOfImages);
 	return config->spNumOfImages;
 
 }
 
+
+
 int spConfigGetNumOfFeatures(const SPConfig config, SP_CONFIG_MSG* msg){
 	assert(msg != NULL);
 	if(config == NULL){
-		*msg = SP_CONFIG_INVALID_ARGUMENT;
+		*(msg) = SP_CONFIG_INVALID_ARGUMENT;
 		return -1;
 	}
 
-	*msg = SP_CONFIG_SUCCESS;
+	//*msg = SP_CONFIG_SUCCESS;
 	return config->spNumOfFeatures;
 }
 
@@ -247,7 +252,7 @@ int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg){
 		return -1;
 	}
 
-	*msg = SP_CONFIG_SUCCESS;
+	//*msg = SP_CONFIG_SUCCESS;
 	return config->spPCADimension;
 }
 
@@ -289,6 +294,96 @@ void spConfigDestroy(SPConfig config){
 	}
 	return;
 }
+
+/******************
+ * Getters (that we were not asked to implement)
+ * ****************/
+
+
+char* spConfigGetspImageDirectory(SPConfig config){
+	printf("entered spConfigGetspImageDirectory\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return NULL;
+	}
+	return config->spImagesDirectory;
+
+}
+
+char* spConfigGetspImagesPrefix(SPConfig config){
+	printf("entered spConfigGetspImagesPrefix\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return NULL;
+	}
+	return config->spImagesPrefix;
+
+}
+
+char* spConfigGetspImagesSuffix(SPConfig config){
+	printf("entered spConfigGetspImagesSuffix\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return NULL;
+	}
+	return config->spImagesSuffix;
+}
+
+
+char* spConfigGetspPCAFilename(SPConfig config){
+	printf("entered spConfigGetspPCAFilename\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return NULL;
+	}
+	return config->spPCAFilename;
+}
+
+char* spConfigGetspLoggerFilename(SPConfig config){
+	printf("entered spConfigGetspLoggerFilename\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return NULL;
+	}
+	return config->spLoggerFilename;
+}
+
+int spConfigGetspNumOfSimilarImages(SPConfig config){
+	printf("entered spConfigGetspNumOfSimilarImages\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return -1;
+	}
+	return config->spNumOfSimilarImages;
+}
+
+int spConfigGetspKNN(SPConfig config){
+	printf("entered spConfigGetspKNN\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return -1;
+	}
+	return config->spKNN;
+}
+int spConfigGetspLoggerLevel(SPConfig config){
+	printf("entered spConfigGetspLoggerLevel\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return -1;
+	}
+	return config->spLoggerLevel;
+}
+
+SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config){
+	printf("entered spConfigGetspKDTreeSplitMethod\n");
+	if(config == NULL){
+		printf("config is NULL\n");
+		return NULL;
+	}
+
+	return config->spKDTreeSplitMethod;
+}
+
 
 /******************
  * Help Functions (need to add description in SPConfig.h)
@@ -348,7 +443,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 			}
 		}
 
-		 *msg = SP_CONFIG_INVALID_INTEGER;
+		*msg = SP_CONFIG_INVALID_INTEGER;
 		memset(statusMSG, 0, sizeof(statusMSG));
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
@@ -662,35 +757,71 @@ void assignDefaultValues(SPConfig config){
 }
 
 void printVariableValuesOfConfig(SPConfig config){
+	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
+	char imagePath[1024];
+	char pcaPath[1024];
+
 	printf("***********printing config values***********\n");
 	if(config == NULL){
 		printf("config is NULL\n");
 		return;
 	}
 
-	printf("spImagesDirectory = %s\n",config->spImagesDirectory);
-	printf("spImagesPrefix = %s\n",config->spImagesPrefix);
-	printf("spImagesSuffix = %s\n",config->spImagesSuffix);
-	printf("spNumOfImages = %d\n",config->spNumOfImages);
-	printf("spPCADimension = %d\n",config->spPCADimension);
+	SP_CONFIG_MSG getImagePathMSG = spConfigGetImagePath(imagePath, config, 1);
+	SP_CONFIG_MSG getPCAPathMSG = spConfigGetPCAPath(pcaPath, config);
+
+	printf("spImagesDirectory = %s\n",spConfigGetspImageDirectory(config));
+	printf("spImagesPrefix = %s\n",spConfigGetspImagesPrefix(config));
+	printf("spImagesSuffix = %s\n",spConfigGetspImagesSuffix(config));
+	printf("spNumOfImages = %d\n",spConfigGetNumOfImages(config, &msg)); //X
+//	printf("spNumOfImages = %d\n",config->spNumOfImages);
+/*	printf("spPCADimension = %d\n",config->spPCADimension);
 	printf("spPCAFilename = %s\n",config->spPCAFilename);
 	printf("spNumOfFeatures = %d\n",config->spNumOfFeatures);
 	printf("spNumOfSimilarImages = %d\n",config->spNumOfSimilarImages);
 	printf("spKNN = %d\n",config->spKNN);
 	printf("spLoggerLevel = %d\n",config->spLoggerLevel);
-	printf("spLoggerFilename = %s\n",config->spLoggerFilename);
-	if(config->spExtractionMode == true){
+	printf("spLoggerFilename = %s\n",config->spLoggerFilename);*/
+	printf("spPCADimension = %d\n",spConfigGetPCADim(config, &msg)); //V
+	printf("spPCAFilename = %s\n",spConfigGetspPCAFilename(config)); //V
+	printf("spNumOfFeatures = %d\n",spConfigGetNumOfFeatures(config, &msg)); //V
+	printf("spNumOfSimilarImages = %d\n",spConfigGetspNumOfSimilarImages(config)); //V
+	printf("spKNN = %d\n",spConfigGetspKNN(config)); //V
+	printf("spLoggerLevel = %d\n",spConfigGetspLoggerLevel(config)); //V
+	printf("spLoggerFilename = %s\n",spConfigGetspLoggerFilename(config)); //V
+
+
+	if(spConfigGetspKDTreeSplitMethod(config) == MAX_SPREAD){
+		printf("spKDTreeSplitMethod = MAX_SPREAD\n");
+	}else if(spConfigGetspKDTreeSplitMethod(config) == RANDOM){
+		printf("spKDTreeSplitMethod = RANDOM\n");
+	}else if(spConfigGetspKDTreeSplitMethod(config) == INCREMENTAL){
+		printf("spKDTreeSplitMethod = INCREMENTAL\n");
+	}else {
+		printf("spConfigGetspKDTreeSplitMethod not working\n");
+	}
+
+
+	if(spConfigIsExtractionMode(config,&msg) == true){
 		printf("spExtractionMode = %s\n","true");
-	}else{
+	}else if(spConfigIsExtractionMode(config,&msg) == false){
 		printf("spExtractionMode = %s\n","false");
-	}
-	if(config->spMinimalGUI == true){
-		printf("spMinimalGUI = %s\n","true");
 	}else{
-		printf("spMinimalGUI = %s\n","false");
+		printf("spConfigIsExtractionMode not working\n");
 	}
+
+	if(spConfigMinimalGui(config,&msg) == true){
+		printf("spMinimalGUI = %s\n","true");
+	}else if(spConfigMinimalGui(config,&msg) == false){
+		printf("spMinimalGUI = %s\n","false");
+	}else{
+		printf("spConfigMinimalGui not working\n");
+	}
+
+
+
+
 	/* printing does not include:
 	SP_KDTREE_SPLIT_METHOD_TYPE spKDTreeSplitMethod; default value= MAX_SPREAD*/
 
 }
-
