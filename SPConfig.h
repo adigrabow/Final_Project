@@ -198,6 +198,6 @@ char* spConfigGetspPCAFilename(SPConfig config);
 char* spConfigGetspLoggerFilename(SPConfig config);
 int spConfigGetspNumOfSimilarImages(SPConfig config);
 int spConfigGetspKNN(SPConfig config);
-int spConfigGetspLoggerLevel(SPConfig config);
+SP_LOGGER_LEVEL spConfigGetspLoggerLevel(SPConfig config);
 SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config);
 #endif /* SPCONFIG_H_ */

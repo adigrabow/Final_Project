@@ -27,11 +27,12 @@ struct sp_config_t{
 	int spNumOfFeatures;
 	bool spExtractionMode;
 	int spNumOfSimilarImages;
-	SP_KDTREE_SPLIT_METHOD_TYPE spKDTreeSplitMethod; /*default value= MAX_SPREAD*/ //TODO where to implement this enum??
-	int spKNN; /*default value= 1*/
+	SP_KDTREE_SPLIT_METHOD_TYPE spKDTreeSplitMethod;
+	int spKNN;
 	bool spMinimalGUI;
 	int spLoggerLevel;
-	char spLoggerFilename[MAX_STRING_LEN]; /*default value= stdout*/
+//	SP_LOGGER_LEVEL spLoggerLevel;
+	char spLoggerFilename[MAX_STRING_LEN];
 
 };
 
@@ -74,8 +75,6 @@ struct sp_config_t{
 #define INVALID_CONFIG_LINE_ERROR_MSG ("File: %s\nLine: %d\nMessage: Invalid configuration line\n")
 #define CONSTRAIT_NOT_MET_ERROR_MSG ("File: %s\nLine: %d\nMessage: Invalid value - constraint not met\n")
 #define PARAMATER_IS_NOT_SET_ERROR_MSG ("File: %s\nLine: %d\nMessage: Parameter %s is not set\n")
-
-
 
 
 int main(){
@@ -219,15 +218,13 @@ bool spConfigMinimalGui(const SPConfig config, SP_CONFIG_MSG* msg){
 
 int spConfigGetNumOfImages(const SPConfig config, SP_CONFIG_MSG* msg){
 	assert(msg != NULL);
-	printf("entered spConfigGetNumOfImages\n");
 	if(config == NULL){
 		printf("config is null\n");
 		*msg = SP_CONFIG_INVALID_ARGUMENT;
 		return -1;
 	}
 
-	//*(msg) = SP_CONFIG_SUCCESS;
-	printf("config->spNumOfImages = %d\n",config->spNumOfImages);
+	*(msg) = SP_CONFIG_SUCCESS;
 	return config->spNumOfImages;
 
 }
@@ -241,7 +238,7 @@ int spConfigGetNumOfFeatures(const SPConfig config, SP_CONFIG_MSG* msg){
 		return -1;
 	}
 
-	//*msg = SP_CONFIG_SUCCESS;
+	*msg = SP_CONFIG_SUCCESS;
 	return config->spNumOfFeatures;
 }
 
@@ -252,7 +249,7 @@ int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg){
 		return -1;
 	}
 
-	//*msg = SP_CONFIG_SUCCESS;
+	*msg = SP_CONFIG_SUCCESS;
 	return config->spPCADimension;
 }
 
@@ -264,8 +261,8 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 	if(index >= config->spNumOfImages){
 		return SP_CONFIG_INDEX_OUT_OF_RANGE;
 	}
-
-	char indexAsString[1024];
+	memset(imagePath, 0, sizeof(imagePath));
+	char indexAsString[1024] = {0};
 	sprintf(indexAsString, "%d",index);
 	strcat(imagePath,config->spImagesDirectory);
 	strcat(imagePath,config->spImagesPrefix);
@@ -301,7 +298,6 @@ void spConfigDestroy(SPConfig config){
 
 
 char* spConfigGetspImageDirectory(SPConfig config){
-	printf("entered spConfigGetspImageDirectory\n");
 	if(config == NULL){
 		printf("config is NULL\n");
 		return NULL;
@@ -311,7 +307,6 @@ char* spConfigGetspImageDirectory(SPConfig config){
 }
 
 char* spConfigGetspImagesPrefix(SPConfig config){
-	printf("entered spConfigGetspImagesPrefix\n");
 	if(config == NULL){
 		printf("config is NULL\n");
 		return NULL;
@@ -321,7 +316,6 @@ char* spConfigGetspImagesPrefix(SPConfig config){
 }
 
 char* spConfigGetspImagesSuffix(SPConfig config){
-	printf("entered spConfigGetspImagesSuffix\n");
 	if(config == NULL){
 		printf("config is NULL\n");
 		return NULL;
@@ -331,7 +325,6 @@ char* spConfigGetspImagesSuffix(SPConfig config){
 
 
 char* spConfigGetspPCAFilename(SPConfig config){
-	printf("entered spConfigGetspPCAFilename\n");
 	if(config == NULL){
 		printf("config is NULL\n");
 		return NULL;
@@ -340,7 +333,6 @@ char* spConfigGetspPCAFilename(SPConfig config){
 }
 
 char* spConfigGetspLoggerFilename(SPConfig config){
-	printf("entered spConfigGetspLoggerFilename\n");
 	if(config == NULL){
 		printf("config is NULL\n");
 		return NULL;
@@ -349,7 +341,6 @@ char* spConfigGetspLoggerFilename(SPConfig config){
 }
 
 int spConfigGetspNumOfSimilarImages(SPConfig config){
-	printf("entered spConfigGetspNumOfSimilarImages\n");
 	if(config == NULL){
 		printf("config is NULL\n");
 		return -1;
@@ -358,24 +349,21 @@ int spConfigGetspNumOfSimilarImages(SPConfig config){
 }
 
 int spConfigGetspKNN(SPConfig config){
-	printf("entered spConfigGetspKNN\n");
 	if(config == NULL){
 		printf("config is NULL\n");
 		return -1;
 	}
 	return config->spKNN;
 }
-int spConfigGetspLoggerLevel(SPConfig config){
-	printf("entered spConfigGetspLoggerLevel\n");
+SP_LOGGER_LEVEL spConfigGetspLoggerLevel(SPConfig config){
 	if(config == NULL){
 		printf("config is NULL\n");
 		return -1;
 	}
-	return config->spLoggerLevel;
+	return (SP_LOGGER_LEVEL) (config->spLoggerLevel - 1);
 }
 
 SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config){
-	printf("entered spConfigGetspKDTreeSplitMethod\n");
 	if(config == NULL){
 		printf("config is NULL\n");
 		return NULL;
@@ -446,7 +434,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		*msg = SP_CONFIG_INVALID_INTEGER;
 		memset(statusMSG, 0, sizeof(statusMSG));
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
-		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
+		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );//TODO change line to be in config file
 		return;
 	}
 	if(strncmp(variableName,"spPCADimension", 14) == 0){
@@ -618,6 +606,24 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		return;
 	}
 
+	if(strncmp(variableName,"spLoggerLevel",13) == 0){
+		printf("assignValueToVariable: entered spLoggerLevel if\n");
+		int val = atoi(value);
+		if(val == 1 || val == 2 || val == 3 || val == 4){
+			config->spLoggerLevel = val;
+			memset(statusMSG, 0, sizeof(statusMSG));
+			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
+			*msg = SP_CONFIG_SUCCESS;
+			return;
+		}
+		memset(statusMSG, 0, sizeof(statusMSG));
+		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
+		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
+		*msg = SP_CONFIG_INVALID_INTEGER;
+		return;
+	}
+
+
 	/*line is invalid (neither a comment/empty line nor system parameter configuration)*/
 	printf(INVALID_CONFIG_LINE_ERROR_MSG, __FILE__, __LINE__);
 	memset(statusMSG, 0, sizeof(statusMSG));
@@ -626,7 +632,6 @@ void assignValueToVariable(SPConfig config, char* variableName,
 	return;
 
 	/*
-	SP_KDTREE_SPLIT_METHOD_TYPE spKDTreeSplitMethod; default value= MAX_SPREAD //TODO where to implement this enum??
 	int spLoggerLevel; default value= 3 {1,2,3,4} 1:error, 2:warning, 3:info, 4:debug
 	 */
 }
@@ -752,7 +757,9 @@ void assignDefaultValues(SPConfig config){
 	config->spNumOfSimilarImages = 1;
 	config->spKNN = 1;
 	config->spKDTreeSplitMethod = MAX_SPREAD;
-	//TODO add spLogger Level and spLoggerFileName
+	config->spLoggerLevel = 3;
+	strcpy(config->spLoggerFilename, "stdout");
+
 	return;
 }
 
@@ -774,14 +781,6 @@ void printVariableValuesOfConfig(SPConfig config){
 	printf("spImagesPrefix = %s\n",spConfigGetspImagesPrefix(config));
 	printf("spImagesSuffix = %s\n",spConfigGetspImagesSuffix(config));
 	printf("spNumOfImages = %d\n",spConfigGetNumOfImages(config, &msg)); //X
-//	printf("spNumOfImages = %d\n",config->spNumOfImages);
-/*	printf("spPCADimension = %d\n",config->spPCADimension);
-	printf("spPCAFilename = %s\n",config->spPCAFilename);
-	printf("spNumOfFeatures = %d\n",config->spNumOfFeatures);
-	printf("spNumOfSimilarImages = %d\n",config->spNumOfSimilarImages);
-	printf("spKNN = %d\n",config->spKNN);
-	printf("spLoggerLevel = %d\n",config->spLoggerLevel);
-	printf("spLoggerFilename = %s\n",config->spLoggerFilename);*/
 	printf("spPCADimension = %d\n",spConfigGetPCADim(config, &msg)); //V
 	printf("spPCAFilename = %s\n",spConfigGetspPCAFilename(config)); //V
 	printf("spNumOfFeatures = %d\n",spConfigGetNumOfFeatures(config, &msg)); //V
@@ -817,11 +816,5 @@ void printVariableValuesOfConfig(SPConfig config){
 	}else{
 		printf("spConfigMinimalGui not working\n");
 	}
-
-
-
-
-	/* printing does not include:
-	SP_KDTREE_SPLIT_METHOD_TYPE spKDTreeSplitMethod; default value= MAX_SPREAD*/
 
 }
