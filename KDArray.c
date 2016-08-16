@@ -131,7 +131,6 @@ int coorCompare(const void * a, const void* b){
 	SPPoint p2 = *(SPPoint*) b;
 
 /*
-
 	printf("p1[0] = %f\n",spPointGetAxisCoor(p1, 0));
 	printf("p2[0] = %f\n",spPointGetAxisCoor(p2, 0));
 	printf("p1 dim = %d\n",spPointGetDimension(p1));
@@ -249,11 +248,11 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	}
 
 	/*printing X*/
-	printf("X: ");
-	for(int k = 0; k < size; k++){
-		printf("%d, ",X[k]);
-	}
-	printf("\n");
+//	printf("X: ");
+//	for(int k = 0; k < size; k++){
+//		printf("%d, ",X[k]);
+//	}
+//	printf("\n");
 
 
 	//for (int i=0; i<halfIndex; i++){ /* size of P1 is halfIndex */
@@ -285,19 +284,19 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	}
 
 	/*printing P1*/
-	printf("P1: ");
-	for(int k = 0; k < 3; k++){
-		printf("%d, ",spPointGetIndex(P1[k]));
-	}
-	printf("\n");
+	///printf("P1: ");
+	//for(int k = 0; k < 3; k++){
+	//	printf("%d, ",spPointGetIndex(P1[k]));
+	//}
+	//printf("\n");
 
 
 	/*printing P2*/
-	printf("P2: ");
-	for(int k = 0; k < 2; k++){
-		printf("%d, ",spPointGetIndex(P2[k]));
-	}
-	printf("\n");
+	//printf("P2: ");
+	//for(int k = 0; k < 2; k++){
+	//	printf("%d, ",spPointGetIndex(P2[k]));
+	//}
+	//printf("\n");
 
 
 	/* Build map1, map2 - arrays including indexes of points if point is in map-i and (-1) otherwise */
@@ -315,11 +314,11 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 		}
 
 	}
-	printf("map1: ");
-	for(int m = 0; m < size; m++){
-		printf("%d, ",map1[m]);
-	}
-	printf("\n");
+//	printf("map1: ");
+////	for(int m = 0; m < size; m++){
+//		printf("%d, ",map1[m]);
+//	}
+//	printf("\n");
 
 
 	for (int i=0; i<size; i++){ /* map2 */
@@ -336,11 +335,11 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 
 	}
 
-	printf("map2: ");
-	for(int m = 0; m < size; m++){
-		printf("%d, ",map2[m]);
-	}
-	printf("\n");
+//	printf("map2: ");
+//	for(int m = 0; m < size; m++){
+//		printf("%d, ",map2[m]);
+//	}
+//	printf("\n");
 
 	/* Build left and right */
 	side = 0; /* indicator for left side in init function */
@@ -460,6 +459,3 @@ void destroyKdArray(kdArray arr){
 	free(arr->pointArray);
 	free(arr);
 }
-
-
-

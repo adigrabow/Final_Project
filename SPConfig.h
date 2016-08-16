@@ -28,7 +28,8 @@ typedef enum sp_config_msg_t {
 typedef enum sp_kdtree_split_method_t{ //TODO find out were this enum definition belongs
 	MAX_SPREAD,
 	RANDOM,
-	INCREMENTAL
+	INCREMENTAL,
+	INVALID_CONFIG, /* We added to recognize a null config sent to spConfigGetspKDTreeSplitMethod */
 }SP_KDTREE_SPLIT_METHOD_TYPE ;
 
 typedef struct sp_config_t* SPConfig;

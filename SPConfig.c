@@ -366,7 +366,7 @@ SP_LOGGER_LEVEL spConfigGetspLoggerLevel(SPConfig config){
 SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config){
 	if(config == NULL){
 		printf("config is NULL\n");
-		return NULL;
+		return INVALID_CONFIG;
 	}
 
 	return config->spKDTreeSplitMethod;
