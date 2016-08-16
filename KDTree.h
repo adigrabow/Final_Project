@@ -5,7 +5,8 @@
  *      Author: Maayan Sivroni
  */
 #include "SPConfig.h"
-
+#include "KDArray.h"
+#include "SPPoint.h"
 
 typedef struct KDTreeNode* kdTree;
 kdTree init(kdArray kdArr, int * index, SP_KDTREE_SPLIT_METHOD_TYPE splitMethod);
