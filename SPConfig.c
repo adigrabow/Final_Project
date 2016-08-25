@@ -58,6 +58,7 @@ struct sp_config_t{
 #define PNG (".png")
 #define BMP (".bmp")
 #define GIF (".gif")
+#define FEAT (".feats")
 
 /**************************
  * Internal status messages
@@ -77,12 +78,6 @@ struct sp_config_t{
 #define PARAMATER_IS_NOT_SET_ERROR_MSG ("File: %s\nLine: %d\nMessage: Parameter %s is not set\n")
 
 
-int main(){
-	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
-	spConfigCreate("a.txt", &msg);
-	return 0;
-}
-
 /**************************
  * Function Implementation
  * ************************/
@@ -99,7 +94,11 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 		return NULL;
 	}
 
-	SPConfig config = (SPConfig)malloc(sizeof(SPConfig));//TODO free memory!
+	/* DF: how much memory do you need to allocate? sizeof(SPConfig)?
+	 * 		hint: SPConfig is a !pointer! of type sp_config_t       */
+	//TODO changed to struct sp_config_t
+
+	SPConfig config = (SPConfig)malloc(sizeof(struct sp_config_t));//TODO free memory!
 	if(config == NULL){
 		*msg = SP_CONFIG_ALLOC_FAIL;
 		return NULL;
@@ -146,7 +145,11 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 				if((strncmp(statusMSG, INTERNAL_STATUS_INVALID_CONFIG_LINE, 19) == 0) ||
 						(strncmp(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET, 17) == 0)){
 					free(config);
-					fclose(filename);
+
+					/* DF: fclose expect the file handler not it's name.
+					 * 		you should pass configFile instead of filename */
+					//TODO changed
+					fclose(configFile);
 					return NULL;
 				}
 			}
@@ -160,7 +163,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 		printf(PARAMATER_IS_NOT_SET_ERROR_MSG, __FILE__, configLineCounter, "spImagesDirectory");
 		*msg = SP_CONFIG_MISSING_DIR;
 		free(config);
-		fclose(filename);
+		fclose(configFile);
 		return NULL;
 
 	}
@@ -168,26 +171,26 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 		printf(PARAMATER_IS_NOT_SET_ERROR_MSG, __FILE__, configLineCounter, "spImagesPrefix");
 		*msg = SP_CONFIG_MISSING_PREFIX;
 		free(config);
-		fclose(filename);
+		fclose(configFile);
 		return NULL;
 	}
 	if(strncmp(config->spImagesSuffix, INTERNAL_DEFAULT_STRING_VALUE,20) == 0){
 		printf(PARAMATER_IS_NOT_SET_ERROR_MSG, __FILE__, configLineCounter, "spImagesSuffix");
 		*msg = SP_CONFIG_MISSING_PREFIX;
 		free(config);
-		fclose(filename);
+		fclose(configFile);
 		return NULL;
 	}
 	if((config->spNumOfImages == -1)){
 		printf(PARAMATER_IS_NOT_SET_ERROR_MSG, __FILE__, configLineCounter, "spNumOfImages" );
 		*msg = SP_CONFIG_MISSING_NUM_IMAGES;
 		free(config);
-		fclose(filename);
+		fclose(configFile);
 		return NULL;
 	}
 
 	printVariableValuesOfConfig(config);
-	fclose(filename);
+	fclose(configFile);
 	return config;
 
 
@@ -261,7 +264,7 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 	if(index >= config->spNumOfImages){
 		return SP_CONFIG_INDEX_OUT_OF_RANGE;
 	}
-	memset(imagePath, 0, sizeof(imagePath));
+	memset(imagePath, 0, 1024); //TODO changed from sizeof(imagePath) to 1024
 	char indexAsString[1024] = {0};
 	sprintf(indexAsString, "%d",index);
 	strcat(imagePath,config->spImagesDirectory);
@@ -269,7 +272,7 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 	strcat(imagePath,indexAsString);
 	strcat(imagePath,config->spImagesSuffix);
 
-	printf("imagePath = %s\n",imagePath);
+	//printf("imagePath = %s\n",imagePath);
 	return SP_CONFIG_SUCCESS;
 
 }
@@ -385,7 +388,11 @@ void assignValueToVariable(SPConfig config, char* variableName,
 	if(strncmp(variableName, "spImagesDirectory", 17) == 0){
 		printf("assignValueToVariable: entered  spImagesDirectory if\n");
 		strcpy(config->spImagesDirectory, value);
-		memset(statusMSG, 0, sizeof(statusMSG));
+
+		/* DF: how much memory do you want to set?  sizeof(statusMSG)?
+		 * 		hint - statusMSG is a pointer.						  */
+		//TODO changed to sizeof char
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 		*msg = SP_CONFIG_SUCCESS;
 		return;
@@ -394,7 +401,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 	if(strncmp(variableName,"spImagesPrefix",14) == 0){
 		printf("assignValueToVariable: entered spImagesPrefix if\n");
 		strcpy(config->spImagesPrefix, value);
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 		*msg = SP_CONFIG_SUCCESS;
 		return;
@@ -405,13 +412,13 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		if((strcmp(value, JPG) == 0) || (strcmp(value, PNG) == 0) ||
 				(strcmp(value, BMP) == 0) || (strcmp(value, GIF) == 0)){
 			strcpy(config->spImagesSuffix,value);
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
 
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
 		*msg = SP_CONFIG_INVALID_STRING;
@@ -424,7 +431,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 			int val = atoi(value);
 			if(val > 0){
 				config->spNumOfImages = val;
-				memset(statusMSG, 0, sizeof(statusMSG));
+				memset(statusMSG, 0, 1024);
 				strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 				*msg = SP_CONFIG_SUCCESS;
 				return;
@@ -432,7 +439,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		}
 
 		*msg = SP_CONFIG_INVALID_INTEGER;
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );//TODO change line to be in config file
 		return;
@@ -443,7 +450,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 			int val = atoi(value);
 			if(10 <= val && val <= 28){
 				config->spPCADimension = val;
-				memset(statusMSG, 0, sizeof(statusMSG));
+				memset(statusMSG, 0, 1024);
 				strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 				*msg = SP_CONFIG_SUCCESS;
 				return;
@@ -451,7 +458,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		}
 
 		*msg = SP_CONFIG_INVALID_INTEGER;
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
 		return;
@@ -460,7 +467,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 	if(strncmp(variableName,"spPCAFilename",13) == 0){
 		printf("assignValueToVariable: entered spPCAFilename if\n");
 		strcpy(config->spPCAFilename,value);
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 		*msg = SP_CONFIG_SUCCESS;
 		return;
@@ -473,7 +480,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 			int val = atoi(value);
 			if(val > 0){
 				config->spNumOfFeatures = val;
-				memset(statusMSG, 0, sizeof(statusMSG));
+				memset(statusMSG, 0, 1024);
 				strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 				*msg = SP_CONFIG_SUCCESS;
 				return;
@@ -481,7 +488,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		}
 
 		*msg = SP_CONFIG_INVALID_INTEGER;
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
 		return;
@@ -491,18 +498,18 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		printf("assignValueToVariable: entered spExtractionMode if\n");
 		if(strncmp(value,"true",4)==0){
 			config->spExtractionMode = true;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}else if(strncmp(value,"false",5)==0){
 			config->spExtractionMode = false;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
 		*msg = SP_CONFIG_INVALID_STRING;
@@ -515,12 +522,12 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		int val = atoi(value);
 		if(val > 0){
 			config->spNumOfSimilarImages = val;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
 		*msg = SP_CONFIG_INVALID_INTEGER;
@@ -531,27 +538,27 @@ void assignValueToVariable(SPConfig config, char* variableName,
 	if(strncmp(variableName,"spKDTreeSplitMethod",19) == 0){ //TODO
 		if(strncmp(value, "RANDOM",6) == 0){
 			config->spKDTreeSplitMethod = RANDOM;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
 		if(strncmp(value, "MAX_SPREAD",10) == 0){
 			config->spKDTreeSplitMethod = MAX_SPREAD;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
 		if(strncmp(value, "INCREMENTAL",11) == 0){
 			config->spKDTreeSplitMethod = INCREMENTAL;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
 
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
 		*msg = SP_CONFIG_INVALID_STRING;
@@ -564,12 +571,12 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		int val = atoi(value);
 		if(val > 0){
 			config->spKNN = val;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
 		*msg = SP_CONFIG_INVALID_INTEGER;
@@ -579,18 +586,18 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		printf("assignValueToVariable: entered spMinimalGUI if\n");
 		if(strncmp(value,"true",4) == 0){
 			config->spMinimalGUI = true;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}else if(strncmp(value,"false",5) == 0){
 			config->spMinimalGUI = false;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
 		*msg = SP_CONFIG_INVALID_STRING;
@@ -600,7 +607,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 	if(strncmp(variableName,"spLoggerFilename",16) == 0){
 		printf("assignValueToVariable: entered spLoggerFilename if\n");
 		strcpy(config->spLoggerFilename,value);
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 		*msg = SP_CONFIG_SUCCESS;
 		return;
@@ -611,12 +618,12 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		int val = atoi(value);
 		if(val == 1 || val == 2 || val == 3 || val == 4){
 			config->spLoggerLevel = val;
-			memset(statusMSG, 0, sizeof(statusMSG));
+			memset(statusMSG, 0, 1024);
 			strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
-		memset(statusMSG, 0, sizeof(statusMSG));
+		memset(statusMSG, 0, 1024);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
 		printf(CONSTRAIT_NOT_MET_ERROR_MSG, __FILE__, __LINE__ );
 		*msg = SP_CONFIG_INVALID_INTEGER;
@@ -626,7 +633,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 
 	/*line is invalid (neither a comment/empty line nor system parameter configuration)*/
 	printf(INVALID_CONFIG_LINE_ERROR_MSG, __FILE__, __LINE__);
-	memset(statusMSG, 0, sizeof(statusMSG));
+	memset(statusMSG, 0, 1024);
 	strcpy(statusMSG, INTERNAL_STATUS_INVALID_CONFIG_LINE);
 	*msg = SP_CONFIG_INVALID_STRING;
 	return;
@@ -817,4 +824,55 @@ void printVariableValuesOfConfig(SPConfig config){
 		printf("spConfigMinimalGui not working\n");
 	}
 
+}
+
+/* Added by Maayan */
+/* =============== */
+SP_CONFIG_MSG spConfigGetImagePathFeat(char* imagePath, const SPConfig config,
+		int index){
+	if(imagePath == NULL || config == NULL){
+		return SP_CONFIG_INVALID_ARGUMENT;
+	}
+	if(index >= config->spNumOfImages){
+		return SP_CONFIG_INDEX_OUT_OF_RANGE;
+	}
+	memset(imagePath, 0, 1024);
+	char indexAsString[1024] = {0};
+	sprintf(indexAsString, "%d",index);
+	strcat(imagePath,config->spImagesDirectory);
+	strcat(imagePath,config->spImagesPrefix);
+	strcat(imagePath,indexAsString);
+	strcat(imagePath,FEAT);
+
+	//printf("imagePath = %s\n",imagePath);
+	return SP_CONFIG_SUCCESS;
+
+}
+
+SPConfig spConfigAlternativeCreate(){
+	SPConfig config = (SPConfig)malloc(sizeof(struct sp_config_t));
+	if(config == NULL){
+		printf("allocation error\n");
+		return NULL;
+	}
+	strcpy(config->spImagesDirectory, "./images/");
+	strcpy(config->spImagesPrefix, "img");
+	strcpy(config->spImagesSuffix, ".png");
+	config->spNumOfImages = 17;
+	//config->spNumOfImages = 3;
+	//config->spPCADimension = 28;
+	config->spPCADimension = 2;
+	strcpy(config->spPCAFilename, "adigrabow.yml");
+	//config->spNumOfFeatures = 20;
+	config->spNumOfFeatures = 2;
+	//config->spExtractionMode = true;
+	config->spExtractionMode = false;
+	config->spNumOfSimilarImages = 2;
+	config->spKDTreeSplitMethod = MAX_SPREAD;
+	config->spKNN = 3;
+	config->spMinimalGUI = false;
+	config->spLoggerLevel = 2;
+	strcpy(config->spLoggerFilename, "stdout");
+
+	return config;
 }

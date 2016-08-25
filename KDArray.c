@@ -24,6 +24,23 @@ struct SPKDArray{
 	int** mat; /* this is the d*size 2d-array that will be sorted by the coor of each row*/
 };
 
+//TODO new structs - sortedPoint,
+/* In order to sort the points - temp struct */
+typedef struct sortedPoint
+{
+	int index; /* contains the index of the point in pointArray */
+	double data; /* contain a single double data[coor] */
+}sortedPoint;
+
+typedef struct sortedPoint * sortedPointsArr;
+/* in order to create map1, map2 - every point has its original index in P */
+typedef struct pointWithPIndex
+{
+	int index; /* contains the index of the point in pointArray */
+	SPPoint point; /* contain a single double data[coor] */
+}pointWithPIndex;
+
+typedef struct pointWithPIndex * pointsWithIndexArr;
 /*getters*/
 
 int getSizeFromKDArray(kdArray arr){
@@ -69,7 +86,7 @@ kdArray Init(SPPoint* arr, int size){
 	}
 	memcpy(copiedArr,arr, sizeof(SPPoint)* size);
 
-	SPPoint* tempArray = (SPPoint*)malloc(sizeof(SPPoint)* size);
+	SPPoint* tempArray = (SPPoint*)malloc(sizeof(SPPoint)* size); /* for sorting */
 	if(!tempArray){
 		free(copiedArr);
 		return NULL;
@@ -87,7 +104,7 @@ kdArray Init(SPPoint* arr, int size){
 	array->pointArray = copiedArr;
 	array->dim = spPointGetDimension(copiedArr[0]);
 
-	int** mat = (int**)malloc(sizeof(int*)*(array->dim));
+	int** mat = (int**)malloc(sizeof(int*)*(array->dim)); /* Allocate mat */
 	if(mat == NULL){
 		free(copiedArr);
 		free(tempArray);
@@ -97,7 +114,7 @@ kdArray Init(SPPoint* arr, int size){
 
 	for(int i = 0; i < array->dim; i++){
 		mat[i] = (int*)malloc(sizeof(int)*size);
-		if(mat[i]==NULL){
+		if(mat[i]==NULL){ /* Allocation error */
 			 for (int k=0;k<i;k++){
 				free(mat[k]);
 				}
@@ -108,15 +125,55 @@ kdArray Init(SPPoint* arr, int size){
 			 return NULL;
 		}
 
-		COOR = i;
-		qsort(tempArray, array->size, sizeof(SPPoint), coorCompare);
+		//COOR = i;
+		//qsort(tempArray, array->size, sizeof(SPPoint), coorCompare);
 		/* make sure that "index" field of SPPoint is the same as the order-index of the input array (Maayan knows :) )    */
 		/* we changed pointArray - is this OKAY?*/
 
+		//int equal = 0; /*if equal==0 then the points arent the same, 1 means equality */
+		//for(int j = 0; j < size; j++){
+		//	mat[i][j] = spPointGetIndex(tempArray[j]);
+			//TODO this is NOT the correct index! we need the index of the point from  pointArray
 
-		for(int j = 0; j < size; j++){
-			mat[i][j] = spPointGetIndex(tempArray[j]);
-			}
+
+		//}
+
+
+		//int* resultArr = NULL;
+		sortedPointsArr sortByIndexArray = (sortedPointsArr) malloc(size * sizeof(sortedPoint));
+
+		if (!sortByIndexArray) {
+			//Allocation error
+			return NULL;
+		}
+
+		/*resultArr = (int*) malloc(size * sizeof(int)); //TODO maybe delete malloc here?
+		if (NULL == resultArr) {
+		//Allocation error
+			free(sortingArr);
+			return NULL;
+		}*/
+
+		/* initialize the sorting array */
+		for(int j=0; j < size; j++)
+		{
+			sortByIndexArray[j].index = j;
+			sortByIndexArray[j].data = spPointGetAxisCoor(array->pointArray[j], i);
+		}
+
+		/*	sort by data[i] */
+		qsort(sortByIndexArray, size, sizeof(sortedPoint), compareSortPoints);
+
+		for (int j=0; j<size; j++)
+		{
+			//resultArr[j] = sortingArr[j].index;
+			mat[i][j] = sortByIndexArray[j].index;
+		}
+
+		/* free allocated memory for sorting */
+		free(sortByIndexArray);
+
+		//mat[i] =  resultArr; // mat[i]
 		}
 
 	array->mat = mat;
@@ -125,12 +182,13 @@ kdArray Init(SPPoint* arr, int size){
 
 }
 
-int coorCompare(const void * a, const void* b){
+int coorCompare(const void * a, const void* b){//TODO delete
 
 	SPPoint p1 = *(SPPoint*) a;
 	SPPoint p2 = *(SPPoint*) b;
 
 /*
+
 	printf("p1[0] = %f\n",spPointGetAxisCoor(p1, 0));
 	printf("p2[0] = %f\n",spPointGetAxisCoor(p2, 0));
 	printf("p1 dim = %d\n",spPointGetDimension(p1));
@@ -144,7 +202,7 @@ int coorCompare(const void * a, const void* b){
 }
 
 
-int compareSPPoints(SPPoint p1, SPPoint p2 , int coordinate){
+int compareSPPoints(SPPoint p1, SPPoint p2 , int coordinate){ //TODO delete
 //	printf("entered compareSPPoints\n");
 //	printf("coordinate = %d\n", coordinate);
 	double num1 = spPointGetAxisCoor(p1,coordinate);
@@ -164,7 +222,29 @@ int compareSPPoints(SPPoint p1, SPPoint p2 , int coordinate){
 }
 
 
+int compareSortPoints(const void * ptr1, const void * ptr2) {
+	sortedPoint * a = (sortedPoint *)ptr1;
+	sortedPoint * b = (sortedPoint *)ptr2;
 
+	if (a->data > b->data) {
+		return 1;
+	}
+	else if (a->data < b->data) {
+		return -1;
+	}
+
+
+	else { /* in case of equality - choose the lower index */
+		if (a->index > b->index) {
+			return 1;
+		}
+		else if (a->index < b->index) {
+			return -1;
+		}
+
+		return 0;
+	}
+}
 
 
 
@@ -283,6 +363,35 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 		}
 	}
 
+	// test to new p1, p2
+	///////////////////////////////
+	pointsWithIndexArr  P1test = (pointsWithIndexArr)malloc(halfIndex * sizeof(pointWithPIndex));
+	if (!P1test){
+		//Alloc error
+		return NULL;
+	}
+	pointsWithIndexArr P2test = (pointsWithIndexArr)malloc((size - halfIndex) * sizeof(pointWithPIndex));
+	if (!P2test){
+		//Alloc error
+		free(P1test);
+		return NULL;
+	}
+	i=0;
+	k = 0;
+	for (int j = 0; j < size; j++){
+		if (X[j] == 0){
+			P1test[i].point = spPointCopy(P[j]);
+			P1test[i].index = j; /*index in P - main array */
+			i++;
+		}else{
+			P2test[k].point = spPointCopy(P[j]);
+			P2test[k].index = j;
+			k++;
+		}
+	}
+
+	///////////////////////////////
+
 	/*printing P1*/
 	///printf("P1: ");
 	//for(int k = 0; k < 3; k++){
@@ -300,16 +409,67 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 
 
 	/* Build map1, map2 - arrays including indexes of points if point is in map-i and (-1) otherwise */
-	for (int i=0; i<size; i++){ /* map1 */
-		flag = 0; /* at the beginning of iteration - point not found yet */
-		for (int j=0; j < halfIndex; j++){ /* iterate in p1 */
+	//TODO new
+	//TODO we need a new struct that will include the point and its index in P !! */
+	pointsWithIndexArr pointsWithIndexArray = (pointsWithIndexArr) malloc(size* sizeof(pointWithPIndex));
+	if (!pointsWithIndexArray){
+		// Allocation error
+		return NULL;
+	}
+	for(i=0;i<size;i++){
+		pointsWithIndexArray[i].index = i;
+		pointsWithIndexArray[i].point = spPointCopy(P[i]);
+	}
+	//TODO now we need to  build P1 P2 using the new struct
+	/* Build map1 */
+	for (i=0; i<size;i++){ /* init default values */
+		map1[i] = -1;
+	}
+	for (i=0; i<halfIndex;i++){
+		//map1[ spPointGetIndex(P1[i])] = i;
+		map1[ P1test[i].index] = i;
+	}
+
+	/* Build map2 */
+	for (i=0; i<size;i++){ /* init default values */
+		map2[i] = -1;
+	}
+	for (i=0; i<(size - halfIndex);i++){
+		//map2[ spPointGetIndex(P2[i])] = i;
+		map2[ P2test[i].index] = i;
+	}
+
+	/* free pointsWithIndexArray */
+	for (i=0;i<size;i++){
+		free(pointsWithIndexArray[i].point);
+
+	}
+	free(pointsWithIndexArray);
+
+	/* free p1test */
+	for (i=0;i<halfIndex;i++){
+		free(P1test[i].point);
+
+	}
+	free(P1test);
+
+	/* free p2test */
+	for (i=0;i<(size - halfIndex);i++){
+		free(P2test[i].point);
+
+	}
+	free(P2test);
+
+	/*for (int i=0; i<size; i++){  map1
+		flag = 0;  at the beginning of iteration - point not found yet
+		for (int j=0; j < halfIndex; j++){  iterate in p1
 			if (spPointGetIndex(kdArr->pointArray[i]) == spPointGetIndex(P1[j])){
 				flag = 1;
 				map1[i] = j;
 			}
 		}
 
-		if (flag == 0){ /* not found in p-i */
+		if (flag == 0){  not found in p-i
 			map1[i] = -1;
 		}
 
@@ -321,19 +481,19 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 //	printf("\n");
 
 
-	for (int i=0; i<size; i++){ /* map2 */
-		flag = 0; /* at the beginning of iteration - point not found yet */
-		for (int j=0; j < (size-halfIndex); j++){ /* iterate in p2 */
+	for (int i=0; i<size; i++){  map2
+		flag = 0;  at the beginning of iteration - point not found yet
+		for (int j=0; j < (size-halfIndex); j++){  iterate in p2
 			if (spPointGetIndex(kdArr->pointArray[i]) == spPointGetIndex(P2[j])){
 				flag = 1;
 				map2[i] = j;
 			}
 		}
-		if (flag == 0){ /* not found in p-i */
+		if (flag == 0){  not found in p-i
 			map2[i] = -1;
 		}
 
-	}
+	}*/
 
 //	printf("map2: ");
 //	for(int m = 0; m < size; m++){
@@ -459,4 +619,6 @@ void destroyKdArray(kdArray arr){
 	free(arr->pointArray);
 	free(arr);
 }
+
+
 

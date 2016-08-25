@@ -21,3 +21,4 @@ int getSizeFromKDArray(kdArray arr);
 kdArray * Split(kdArray kdArr, int coor);
 kdArray initFromSplit(kdArray arr, int* X,int * map,int side);
 void destroyKdArray(kdArray arr);
+int compareSortPoints(const void * ptr1, const void * ptr2);

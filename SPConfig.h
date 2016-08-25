@@ -201,4 +201,6 @@ int spConfigGetspNumOfSimilarImages(SPConfig config);
 int spConfigGetspKNN(SPConfig config);
 SP_LOGGER_LEVEL spConfigGetspLoggerLevel(SPConfig config);
 SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config);
+SP_CONFIG_MSG spConfigGetImagePathFeat(char* imagePath, const SPConfig config, int index);
+SPConfig spConfigAlternativeCreate();
 #endif /* SPCONFIG_H_ */

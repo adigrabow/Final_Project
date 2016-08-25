@@ -1,7 +1,7 @@
 /*
  * KDTree.h
  *
- *  Created on: 27 ‡“ 2016
+ *  Created on: 27 αιεμ 2016
  *      Author: Maayan Sivroni
  */
 #include "SPConfig.h"

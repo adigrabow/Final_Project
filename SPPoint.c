@@ -65,13 +65,13 @@ int spPointGetIndex(SPPoint point){
 }
 
 double spPointGetAxisCoor(SPPoint point, int axis){
-/*	if(point == NULL){
+	if(point == NULL){
 		printf("given point is NULL\n");
 	}
 	if(axis >= point->dim){
 		printf("axis >= point->dim\n");
-	}*/
-	assert (point != NULL && axis < point->dim);
+	}
+	//assert (point != NULL && axis < point->dim);
 
 //	printf("spPointGetAxisCoor: %f\n",point->data[axis]);
 	return point->data[axis];
@@ -96,6 +96,10 @@ double spPointL2SquaredDistance(SPPoint p, SPPoint q){
 
 }
 void printPoint(SPPoint p){
+	if (!p){
+			printf("point is null\n");
+			return;
+		}
 	int dim = p->dim;
 	for(int i = 0; i < dim; i++){
 		printf("%f, ",spPointGetAxisCoor(p,i));

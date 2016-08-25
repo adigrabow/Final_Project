@@ -1,33 +1,3 @@
-<<<<<<< HEAD
-/*
- * main_aux.h
- *
- *  Created on: 29 ‡ŽŒ“ 2016
- *      Author: Maayan Sivroni
- */
-
-typedef struct Img {
-	int index; /*this will store the index of the image this feature belongs to */
-	int hits; /* this will store the number of hits this img had */
-
-}Img;
-
-#include "KDTree.h"
-#include "SPConfig.h"
-
-
-#include "SPBPriorityQueue.h"
-
-SPPoint *extractFromFiles(SPConfig config, int * size);
-SPBPQueue initBPQ(SPConfig config);
-void  kNearestNeighbors(kdTree curr , SPBPQueue bpq, SPPoint P, int dim, SPConfig config);
-int extractIndexFromQuery(char * query);
-int * initCount(int numOfPics);
-void destroyCount(int * array);
-void addToCount(SPBPQueue bpq,int * allPicsCount);
-Img * initImgArray(int * allPicsCount, int numOfPics);
-int compareHits (const void * a, const void * b);
-=======
 /*
  * main_aux.h
  *
@@ -43,7 +13,7 @@ typedef struct Img {
 
 #include "KDTree.h"
 #include "SPConfig.h"
-
+#define _MAX 1024
 
 #include "SPBPriorityQueue.h"
 
@@ -56,4 +26,3 @@ void destroyCount(int * array);
 void addToCount(SPBPQueue bpq,int * allPicsCount);
 Img * initImgArray(int * allPicsCount, int numOfPics);
 int compareHits (const void * a, const void * b);
->>>>>>> 105c0abecfc8dba895e59e30b24cc0750a6104ef
