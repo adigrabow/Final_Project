@@ -61,7 +61,7 @@ int main(int argc, char * argv[]){
 	char imagePath [_MAX] = {0};
 	char imagePathToDisplay [_MAX] = {0}; /* saves the image path that was created in  spConfigGetImagePath */
 	char query[_MAX] = {0}; /* the program will ask the user to enter an image path  */
-	const char *EXIT = "<>"; /*if query == EXIT then end program */
+	//const char *EXIT = "<>"; /*if query == EXIT then end program */
 
 
 	/****************
@@ -233,7 +233,7 @@ int main(int argc, char * argv[]){
 				return 0;
 			}
 
-			fp = fopen(featPath, "w+");
+			fp = fopen(featPath, WRITE_TO_FILE);
 			fprintf(fp, "%d#%d\n", numOfFeats,i); // first row is numOfFeats # index //
 
 			for (k = 0; k < numOfFeats; k++){ // each row is the data of the k-th point  //
@@ -284,7 +284,7 @@ int main(int argc, char * argv[]){
 	fflush(stdout);
 	scanf("%s", query);
 
-	while (strcmp(EXIT,query) != 0){
+	while (strcmp(EXIT_PROGRAM,query) != 0){
 
 		spLoggerPrintInfo(LOGGER_INFO_WORKING_ON_NEW_QUERY);
 		index = extractIndexFromQuery(query);
@@ -351,7 +351,7 @@ int main(int argc, char * argv[]){
 		/* NON-MINIMAL GUI */
 		else{
 			spLoggerPrintInfo(LOGGER_INFO_NOT_USING_MINIMAL_GUI);
-			printf("Best candidates for - %s - are:\n",query);
+			printf(BEST_CANIDATES,query);
 			fflush(stdout);
 			for (i = 0; i < numOfSimilarImagesToDisplay; i++){ // display the first numOfSimilarImages images in stdout
 				k = allPicsCountOrdered[i].index; // get the img index

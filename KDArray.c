@@ -27,22 +27,7 @@
 #define LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY ("Failed to allocate memory.\n")
 
 
-/****************************
- Help Functions Declarations
- ***************************/
-/*
- * This function is called only from 'Split' and since no sorting is needed,
- * it creates a new KDArray in O(n) time.
- *
- * @param	arr				the kdArray
- * @param	X				help array (see more details in PDF)
- * @param	map				map array (see more details in PDF)
- * @param	side			a flag, 0 iff left side and 1 iff right side
- *
- * @return	kdArray			on success the kdarray
- * 								on failure NULL
- ***/
-kdArray initFromSplit(kdArray arr, int* X,int * map,int side);
+
 
 
 int COOR = 0; /* global? */
@@ -55,7 +40,6 @@ struct SPKDArray{
 	int** mat; /* this is the d*size 2d-array that will be sorted by the coor of each row*/
 };
 
-//TODO new structs - sortedPoint,
 /* In order to sort the points - temp struct */
 typedef struct sortedPoint
 {
@@ -82,6 +66,7 @@ int getSizeFromKDArray(kdArray arr){
 
 	if (NULL == arr) {
 		spLoggerPrintError(LOGGER_ERROR_KDARRAY_NULL,__FILE__, __func__, __LINE__ );
+		//TODO fix warning
 		return -1;
 	}
 	return arr->size;
@@ -260,7 +245,7 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 		return NULL;
 	}
 
-	SPPoint point = getPointArrayFromKDArray(kdArr)[0];
+
 
 	SPPoint* P = (SPPoint*)malloc(sizeof(SPPoint)* getSizeFromKDArray(kdArr));
 	if(NULL == P) {
@@ -279,8 +264,6 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 
 	int size = getSizeFromKDArray(kdArr);
 	int halfIndex = (size + 1) / 2; /* half is index n/2 rounded up */
-	int flag = 0; /* for creating maps : 0=not found in pi, else 1 */
-	//TODO for all the arrays: maybe use malloc?
 
 	int * X = (int *) malloc(sizeof(int)*size);
 	if (NULL == X) {
@@ -360,54 +343,40 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 		}
 	}
 
-	// test to new p1, p2
-	///////////////////////////////
-	pointsWithIndexArr  P1test = (pointsWithIndexArr)malloc(halfIndex * sizeof(pointWithPIndex));
-	if (!P1test){
+	/* create P1 P2 with indexes in order to build map1 map2 */
+	pointsWithIndexArr  P1_with_indexes = (pointsWithIndexArr)malloc(halfIndex * sizeof(pointWithPIndex));
+	if (!P1_with_indexes){
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
 		return NULL;
 	}
-	pointsWithIndexArr P2test = (pointsWithIndexArr)malloc((size - halfIndex) * sizeof(pointWithPIndex));
-	if (!P2test){
+	pointsWithIndexArr P2_with_indexes = (pointsWithIndexArr)malloc((size - halfIndex) * sizeof(pointWithPIndex));
+	if (!P2_with_indexes){
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
-		free(P1test);
+		free(P1_with_indexes);
 		return NULL;
 	}
 	i = 0;
 	k = 0;
 	for (int j = 0; j < size; j++){
 		if (X[j] == 0){
-			P1test[i].point = spPointCopy(P[j]);
-			P1test[i].index = j; /*index in P - main array */
+			P1_with_indexes[i].point = spPointCopy(P[j]);
+			P1_with_indexes[i].index = j; /*index in P - main array */
 			i++;
 		}else{
-			P2test[k].point = spPointCopy(P[j]);
-			P2test[k].index = j;
+			P2_with_indexes[k].point = spPointCopy(P[j]);
+			P2_with_indexes[k].index = j;
 			k++;
 		}
 	}
 
 
 	/* Build map1, map2 - arrays including indexes of points if point is in map-i and (-1) otherwise */
-	//TODO new
-	//TODO we need a new struct that will include the point and its index in P !! */
-	pointsWithIndexArr pointsWithIndexArray = (pointsWithIndexArr) malloc(size* sizeof(pointWithPIndex));
-	if (!pointsWithIndexArray){
-		// Allocation error
-		return NULL;
-	}
-	for(i = 0; i < size; i++){
-		pointsWithIndexArray[i].index = i;
-		pointsWithIndexArray[i].point = spPointCopy(P[i]);
-	}
-	//TODO now we need to  build P1 P2 using the new struct
 	/* Build map1 */
 	for (i=0; i<size;i++){ /* init default values */
 		map1[i] = -1;
 	}
 	for (i=0; i<halfIndex;i++){
-		//map1[ spPointGetIndex(P1[i])] = i;
-		map1[ P1test[i].index] = i;
+		map1[ P1_with_indexes[i].index] = i;
 	}
 
 	/* Build map2 */
@@ -415,30 +384,25 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 		map2[i] = -1;
 	}
 	for (i=0; i<(size - halfIndex);i++){
-		//map2[ spPointGetIndex(P2[i])] = i;
-		map2[ P2test[i].index] = i;
+		map2[ P2_with_indexes[i].index] = i;
 	}
 
-	/* free pointsWithIndexArray */
-	for (i=0;i<size;i++){
-		free(pointsWithIndexArray[i].point);
-
-	}
-	free(pointsWithIndexArray);
-
-	/* free p1test */
+	/* free P1_with_indexes */
 	for (i=0;i<halfIndex;i++){
-		free(P1test[i].point);
+		spPointDestroy(P1_with_indexes[i].point);
 
 	}
-	free(P1test);
+	free(P1_with_indexes);
 
-	/* free p2test */
+
+
+	/* free P2_with_indexes */
 	for (i=0;i<(size - halfIndex);i++){
-		free(P2test[i].point);
+		spPointDestroy(P2_with_indexes[i].point);
 
 	}
-	free(P2test);
+	free(P2_with_indexes);
+
 
 
 	/* Build left and right */
@@ -451,8 +415,9 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	free(X);
 	free(map1);
 	free(map2);
+	free(P1);
+	free(P2);
 	free(P);
-
 	/* update result */
 	result[0] = Left;
 	result[1] = Right;
