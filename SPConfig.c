@@ -408,7 +408,7 @@ SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config){
  * ****************/
 
 void assignValueToVariable(SPConfig config, char* variableName,
-		char* value, char* statusMSG,  SP_CONFIG_MSG* msg, char* configFileName, int configLineCounter ){
+		char* value, char* statusMSG,  SP_CONFIG_MSG* msg,const char* configFileName, int configLineCounter ){
 
 
 	if(strncmp(variableName, "spImagesDirectory", 17) == 0){
@@ -794,8 +794,8 @@ void printVariableValuesOfConfig(SPConfig config){
 		return;
 	}
 
-	SP_CONFIG_MSG getImagePathMSG = spConfigGetImagePath(imagePath, config, 1);
-	SP_CONFIG_MSG getPCAPathMSG = spConfigGetPCAPath(pcaPath, config);
+	spConfigGetImagePath(imagePath, config, 1);
+	spConfigGetPCAPath(pcaPath, config);
 
 	printf("spImagesDirectory = %s\n",spConfigGetspImageDirectory(config));
 	printf("spImagesPrefix = %s\n",spConfigGetspImagesPrefix(config));

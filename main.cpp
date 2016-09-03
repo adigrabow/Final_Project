@@ -382,6 +382,7 @@ int main(int argc, char * argv[]){
 	destroyKdTree(tree);
 	destroyKdArray(kdArr);
 	free(pointArray);//TODO maybe we need to free every point in pointArray and then free the array?
+	spLoggerPrintInfo(LOGGER_INFO_FINISHED_SUCCESFULY);
 	spLoggerPrintInfo(EXIT_FROM_MAIN_MSG);
 	return 0;
 }

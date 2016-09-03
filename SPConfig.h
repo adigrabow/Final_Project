@@ -236,7 +236,7 @@ bool isThereAHashSignInTheMiddleOfTheLine(char* line);
 
 void assignValueToVariable(SPConfig config, char* variableName,
 		char* value, char* statusMSG,
-		SP_CONFIG_MSG* msg, char* configFileName, int configLineCounter );
+		SP_CONFIG_MSG* msg, const char* configFileName, int configLineCounter );
 
 /*
 * this function prints all variables values.

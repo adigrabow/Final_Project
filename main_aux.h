@@ -60,6 +60,7 @@ typedef struct Img {
 #define LOGGER_INFO_NOT_USING_MINIMAL_GUI ("Not using minimal GUI.\n")
 #define LOGGER_INFO_DONE_WITH_EXTRACTION_MODE ("Done with extraction mode.\n")
 #define LOGGER_INFO_WORKING_ON_NEW_QUERY ("Started main-loop for a new query.\n")
+#define LOGGER_INFO_FINISHED_SUCCESFULY ("Succesfuly finished main function.\n")
 
 #define LOGGER_WAR_NUM_OF_UPDATED_HITS_SMALLER_THAN_NUM_OF_SIMILAR_IMG ("Number of updated hits is smaller than number of similar images.\n The num of images to be displayed will be smaller than expected.\n")
 
