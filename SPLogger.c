@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#ifndef NULL
+#define NULL   ((void *) 0)
+#endif
+
 //File open mode
 #define SP_LOGGER_OPEN_MODE "w"
 

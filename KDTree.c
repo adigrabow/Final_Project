@@ -1,13 +1,12 @@
 /*
  * KDTree.c
  *
- *  Created on: 27 αιεμ 2016
+ *  Created on: 27  2016
  *      Author: Maayan Sivroni
  */
 
 #include "KDArray.h"
 #include "KDTree.h"
-
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +19,17 @@
  * spKDTreeSplitMethod should be part of the config struct.
  * Create a destroy function for the tree.
  * */
+
+/******************
+ Logger Messages
+ *****************/
+#define LOGGER_ERROR_FAILED_TO_ALLOCATE_MEM_FOR_SORTED_POINT_ARR ("Failed to allocate memory for SortedPointArr.\n")
+#define LOGGER_ERROR_FUNCTION_ARGUMENTS_FAILED_TO_MEET_CONSTRAINTS ("Function arguments failed to meet constraints.\n")
+#define LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY ("Failed to allocate memory.\n")
+#define LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY ("Function received empty parameter.\n")
+
+
+
 struct KDTreeNode{
 	int dim; /* The splitting dimension */
 	double val; /* The median value of the splitting dimension */
@@ -28,26 +38,37 @@ struct KDTreeNode{
 	SPPoint data; /* Pointer to a point (only if the current node is a leaf) otherwise this field value is NULL */
 };
 
+
+/*************************
+ Functions Implementation
+ ************************/
+
 kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMethod){ /* prevIndex = pointer to the i-split dimension */
 
 	/* if array size is 1 then create node and return it */
 	if (getSizeFromKDArray(kdArr) == 1){
 		kdTree node = (kdTree)malloc(sizeof(struct KDTreeNode));
-		if(node == NULL){
+
+		if(node == NULL) {
+			spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
 			return NULL;
 		}
+
 		node->dim = -1;
 		node->val = -1.0;
 		node->left = NULL;
 		node->right = NULL;
 		SPPoint point = spPointCopy((getPointArrayFromKDArray(kdArr))[0]);
-		node->data = point; //new
+		node->data = point;
 		return node;
 	}
 	double * spreadArray = (double *) malloc (sizeof(double)*getDimFromKDArray(kdArr)); /* will contain all spreads for MAX_SPREAD mode */
-	if (!spreadArray){
+
+	if (NULL == spreadArray) {
+		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
 		return NULL;
 	}
+
 	int i;
 	double max= 0.0; /* for MAX_SPREAD */
 	int index; /* the index of the dimension to split by */
@@ -61,6 +82,7 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 
 		/* create spreadArray - calculate spread for each dimension and choose the maximum */
 		for (i=0; i< getDimFromKDArray(kdArr); i++){
+
 			double max_coor, min_coor;
 			double * tmpDataArray1;
 			double * tmpDataArray2;
@@ -81,7 +103,6 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 		for (i=0; i< getDimFromKDArray(kdArr); i++){
 			if (spreadArray[i] == max){
 				index = i;
-
 				break;
 			}
 		}
@@ -96,7 +117,6 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 
 	if (splitMethod == INCREMENTAL){ /* INCREMENTAL */
 
-		printPointIndex(kdArr,getSizeFromKDArray(kdArr));
 		index = (*prevIndex +1) % getDimFromKDArray(kdArr);
 	}
 
@@ -104,10 +124,12 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 
 	// create tree recursively
 	kdTree node = (kdTree)malloc(sizeof(struct KDTreeNode));
-	if(node == NULL){
+	if(node == NULL) {
+		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
 		free(spreadArray);
 		return NULL;
 	}
+
 	node->dim = index;
 	SPPoint point = (getPointArrayFromKDArray(twoKdArrays[0])) [ getMatrixFromKDArray(twoKdArrays[0])[index][getSizeFromKDArray(twoKdArrays[0]) -1] ];
 	tmpDataArray = spPointGetData(point);
@@ -121,37 +143,58 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 	node->left = left;
 	node->right = right;
 	node->data = NULL; // pointArray is an array that is a pointer to point
+
 	return node;
 
 }
 
-
+/********
+ Getters
+ ********/
 
 int kdTreeGetDimension(kdTree node){
-	assert(node != NULL);
+	if ( NULL == node) {
+		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
+		return -1;
+	}
 	return node->dim;
 }
 
 double kdTreeGetVal(kdTree node){
-	assert(node != NULL);
+
+	if (NULL == node) {
+		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
+		return -1.0;
+	}
 	return node->val;
 }
 
 kdTree  kdTreeGetLeft(kdTree node){
-	assert(node != NULL);
+
+	if (NULL == node){
+		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
+		return NULL;
+	}
 	return node->left;
 }
 
 kdTree  kdTreeGetRight(kdTree node){
-	assert(node != NULL);
+
+	if (NULL == node) {
+		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
+		return NULL;
+	}
 	return node->right;
 }
 
-
 SPPoint kdTreeGetData(kdTree node){
-	assert(node != NULL);
-	if (!(node->data)){
-		printf("the point is NULL!");
+
+	if (NULL == node){
+		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
+		return NULL;
+	}
+	if (NULL == node->data) {
+		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENTS_FAILED_TO_MEET_CONSTRAINTS,__FILE__, __func__, __LINE__ );
 		return NULL;
 	}
 	SPPoint dataCopy = spPointCopy(node->data);
@@ -159,6 +202,12 @@ SPPoint kdTreeGetData(kdTree node){
 }
 
 void destroyKdTree(kdTree node){
+
+	if (NULL == node) {
+		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
+		return;
+	}
+
 	if( kdTreeGetDimension(node) != -1 ){ // if the node is NOT a leaf
 		destroyKdTree(node->left);
 		destroyKdTree(node->right);
@@ -172,7 +221,7 @@ void destroyKdTree(kdTree node){
 
 
 void printPointIndex(kdArray arr, int numOfPoints){
-	if (!arr){
+	if (NULL == arr){
 		printf("array is null");
 		return;
 	}
