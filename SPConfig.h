@@ -231,7 +231,6 @@ bool isThereAHashSignInTheMiddleOfTheLine(char* line);
 * @param config - the config
 * @param variableName - the variable we want to assign to
 * @param Value - the value to be assigned
-
 */
 
 void assignValueToVariable(SPConfig config, char* variableName,
@@ -257,7 +256,7 @@ void assignDefaultValues(SPConfig config);
 /*
 * This function checks if a numeric value is valid
 *@ return
-* - true - iff the numeric value doesn't contain decimal point or isn't negative number
+* - true - iff the numeric value doesn't contain decimal point and isn't negative number
 * - false - otherwise
 */
 
@@ -267,21 +266,132 @@ bool isNumericValueValid(char* number);
  * Returns the PCA path.
  * @param config - the configuration structure
  * @param msg - pointer in which the msg returned by the function is stored
- *
+ * @ return
  * - SP_CONFIG_INVALID_ARGUMENT - if config == NULL or pcaPath == NULL
  * - SP_CONFIG_SUCCESS - in case of success
  */
 
 SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
+
+
+
 char* spConfigGetImageDirectory(SPConfig config);
+
+
+/**
+ * Returns the image prefix. i.e: 'img'
+ *
+ * @param config - the configuration structure
+ 
+ * @return char* with the image prefix in case of success and NULL otherwise.
+
+ */
+
 char* spConfigGetspImagesPrefix(SPConfig config);
+
+/**
+ * Returns the image suffix. i.e: 'jpg'
+ *
+ * @param config - the configuration structure
+ 
+ * @return
+			char*	- with the image suffix in case of success
+			NULL	- otherwise.
+ */
+
 char* spConfigGetspImagesSuffix(SPConfig config);
+
+/**
+ * Returns the PCA file name.
+ *
+ * @param config - the configuration structure
+ 
+ * @return
+			char*	- with PCA file name in case of success
+			NULL	- otherwise.
+ */
+
 char* spConfigGetspPCAFilename(SPConfig config);
+
+/**
+ * Returns the logger file name.
+ *
+ * @param config - the configuration structure
+ 
+ * @return
+			char*	- with logger file name in case of success
+			NULL	- otherwise.
+ */
+
 char* spConfigGetspLoggerFilename(SPConfig config);
+
+/**
+ * Returns the number of similar images. i.e: 5 (the 5 most similar images to query will be displayed)
+ *
+ * @param config - the configuration structure
+ 
+ * @return
+		int with a number greater than (-1)		- in case of success
+		(-1)	- otherwise.
+ */
 int spConfigGetspNumOfSimilarImages(SPConfig config);
+
+/**
+ * Returns the spKNN (which is the length of the BPQueue we are using in KNearestNeighburs.
+ *
+ * @param config - the configuration structure
+ 
+ * @return
+		int with a number greater than (-1)		- in case of success
+		(-1)	- otherwise.
+ */
+
 int spConfigGetspKNN(SPConfig config);
+
+/**
+ * Returns the requested logger level.
+ *
+ * @param config - the configuration structure
+ 
+ * @return one of the following defined SP_LOGGER_LEVEL:
+		SP_LOGGER_ERROR_LEVEL	- (In this level only error messages are printed)
+		SP_LOGGER_WARNING_ERROR_LEVEL	- (In this level only warning and error messages are printed)
+		SP_LOGGER_INFO_WARNING_ERROR_LEVEL	 - (in this level info, warning and error messages are printed)
+		SP_LOGGER_DEBUG_INFO_WARNING_ERROR_LEVEL	- (in this level all message are printed)
+		(-1)	- if congig is NULL. //TODO is this ok? should we add INVALID_CONFIG to the SP_LOGGER_LEVEL enum?
+ */
 SP_LOGGER_LEVEL spConfigGetspLoggerLevel(SPConfig config);
+
+/**
+ * Returns the requested KDTree Split Method.
+ *
+ * @param config - the configuration structure
+ 
+ * @return one of the following defined SP_KDTREE_SPLIT_METHOD_TYPE:
+		MAX_SPREAD
+		RANDOM 
+		INCREMENTAL
+		INVALID_CONFIG	- if congig is NULL.
+ */
+
+
 SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config);
+
+/**
+ * Returns the requested Image Path Feat.
+ *
+ * @param config - the configuration structure
+ 
+ * @return one of the following defined SP_CONFIG_MSG:
+		SP_CONFIG_INVALID_ARGUMENT	- if (imagePath == NULL) or (config == NULL)
+		SP_CONFIG_INDEX_OUT_OF_RANGE	- if (index >= config->spNumOfImages)
+		SP_CONFIG_SUCCESS	 - in case of success 
+
+ */
+
 SP_CONFIG_MSG spConfigGetImagePathFeat(char* imagePath, const SPConfig config, int index);
+
+
+
 SPConfig spConfigAlternativeCreate();
 #endif /* SPCONFIG_H_ */
