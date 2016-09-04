@@ -78,12 +78,114 @@ struct sp_config_t{
 #define PARAMATER_IS_NOT_SET_ERROR_MSG ("File: %s\nLine: %d\nMessage: Parameter %s is not set\n")
 
 
+/*****************************
+ * Help Functions Declarations (functions for internal use)
+ *****************************/
+
+/*
+*
+*@ return
+* - true - if the string has no Hash sign / spaces / tabs
+* - false - otherwise
+*/
+
+bool isStringValid(char* string);
+
+/*
+*
+*@ return
+* - true - if a none-comment line doesn't contain any Hash signs
+* - false - otherwise
+*/
+
+bool isLineValid(char* line);
+
+
+/*
+*
+*@ return
+* - true - iff a line starts with a Hash signs
+* - false - otherwise
+*/
+
+bool isLineCommentLine(char* string);
+
+
+
+/*
+* after the function the 'clean' variable or value will be stored in 'word'.
+* @param string - the string we want to 'clean' ()
+* this function
+*@ return
+* - true - iff a line starts with a Hash signs
+* - false - otherwise
+*/
+void getCleanWordFromString(char* string, char* word);
+
+/*
+*
+*@ return
+* - true - iff a non-comment line contains a Hash sign
+* - false - otherwise
+*/
+
+bool isThereAHashSignInTheMiddleOfTheLine(char* line);
+
+/*
+* this function assigns variables with the suitable value.
+* @param config - the config
+* @param variableName - the variable we want to assign to
+* @param Value - the value to be assigned
+*/
+
+/*
+void assignValueToVariable(SPConfig config, char* variableName,
+		char* value, char* statusMSG,
+		SP_CONFIG_MSG* msg, char* configFileName, int configLineCounter);
+*/
+
+void assignValueToVariable(SPConfig config, char* variableName,
+		char* value, char* statusMSG,
+		SP_CONFIG_MSG* msg, const char* configFileName, int configLineCounter );
+
+/*
+* this function prints all variables values.
+* @param config - the config
+*/
+
+void printVariableValuesOfConfig(SPConfig config);
+
+/*
+* This function assigns default values to all relevant variables:
+* spPCADimension, spPCAFilename, spNumOfFeatures, spExtractionMode, spMinimalGUI
+* spNumOfSimilarImages, spKNN, spKDTreeSplitMethod, spLoggerLevel, spLoggerFilename
+* @param config - the config
+*/
+
+void assignDefaultValues(SPConfig config);
+
+/*
+* This function checks if a numeric value is valid
+*@ return
+* - true - iff the numeric value doesn't contain decimal point and isn't negative number
+* - false - otherwise
+*/
+
+bool isNumericValueValid(char* number);
+
+
+/*This functions assigns manually values to the config
+ *  (it was build before the config was ready)*/
+
+SPConfig spConfigAlternativeCreate();
+
+
 /**************************
  * Function Implementation
  * ************************/
 
 /*
-int main(){
+int main() {
 
 	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
 	SPConfig conf = spConfigCreate("a.txt", &msg);
@@ -145,49 +247,35 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 
 		}
 
-
 		while(string != NULL ){
 
-			if(valueFlag == 0){
+			/*makes sure the string (value or variable name) doesn't contain any spaces*/
+			if (false == isStringValid(string)) {
+
+				printf(INVALID_CONFIG_LINE_ERROR_MSG, filename, configLineCounter );
+				*msg = SP_CONFIG_INVALID_ARGUMENT;
+				free(config);
+				fclose(configFile);
+				return NULL;
+
+			}
+
+			if(valueFlag == 0) {
+
 				memset(variableName, 0, sizeof(variableName));
 				getCleanWordFromString(string, variableName);
-				/*printf ("Clean variableName =%s\n",variableName);*/
-				/*makes sure the variable name doesn't contain any spaces*/
-/*
-				if (!isStringValid(variableName)) {
-					printf(INVALID_CONFIG_LINE_ERROR_MSG, filename, configLineCounter );
-					*msg = SP_CONFIG_INVALID_ARGUMENT;
-					free(config);
-					fclose(configFile);
-					return NULL;
 
-				}
-*/
 			}
 
 			if(valueFlag == 1){
+
 				memset(value, 0, sizeof(value));
 				getCleanWordFromString(string, value);
-				/*printf ("Clean valueName =%s\n",value);*/
-
-				/*makes sure the value name doesn't contain any spaces*/
-
-				/*
-				if (!isStringValid(value)) {
-					printf(INVALID_CONFIG_LINE_ERROR_MSG, filename, configLineCounter );
-					*msg = SP_CONFIG_INVALID_ARGUMENT;
-					free(config);
-					fclose(configFile);
-					return NULL;
-
-				}*/
-
 				assignValueToVariable(config, variableName, value, statusMSG, msg, filename, configLineCounter);
 
 				if((strncmp(statusMSG, INTERNAL_STATUS_INVALID_CONFIG_LINE, 19) == 0) ||
 						(strncmp(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET, 17) == 0)){
 					free(config);
-
 					fclose(configFile);
 					return NULL;
 				}
@@ -220,7 +308,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 		fclose(configFile);
 		return NULL;
 	}
-	if((config->spNumOfImages == -1)){
+	if((config->spNumOfImages == (-1))){
 		printf(PARAMATER_IS_NOT_SET_ERROR_MSG, filename, configLineCounter, "spNumOfImages" );
 		*msg = SP_CONFIG_MISSING_NUM_IMAGES;
 		free(config);
@@ -393,7 +481,6 @@ SP_LOGGER_LEVEL spConfigGetspLoggerLevel(SPConfig config){
 	}
 	return (SP_LOGGER_LEVEL) (config->spLoggerLevel - 1);
 }
-
 SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config){
 	if(config == NULL){
 		return INVALID_CONFIG;
@@ -408,7 +495,7 @@ SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config){
  * ****************/
 
 void assignValueToVariable(SPConfig config, char* variableName,
-		char* value, char* statusMSG,  SP_CONFIG_MSG* msg,const char* configFileName, int configLineCounter ){
+		char* value, char* statusMSG,  SP_CONFIG_MSG* msg, const char* configFileName, int configLineCounter){
 
 
 	if(strncmp(variableName, "spImagesDirectory", 17) == 0){
@@ -667,6 +754,9 @@ bool isLineValid(char* line){
 	return true;
 }
 
+
+
+
 void getCleanWordFromString(char* string, char* word){
 	int firstLetterIndex = 0;
 	int lastLetterIndex = 0;
@@ -707,18 +797,42 @@ bool isStringValid(char* string){
 		return false;
 	}
 
-	int i = 0;
+	int firstLetterIndex = 0;
+	int lastLetterIndex = 0;
+	int realLastLetterIndex = 0;
 
-	while(*(string + i) != '\0'){
-		if(*(string + i) == HASH || (*(string + i) == WHITESPACE) || (*(string + i) == TAB) ||
-				(*(string + i) == VERTICAL) || (*(string + i) == NEW_LINE)){ /* #,'\t','\r'.. in the middle of the line is not valid!*/
+	/* get the index of the first letter */
+	for(int i = 0; i < strlen(string); i++ ) {
+
+		if((*(string + i) != WHITESPACE) && (*(string + i) != TAB)){
+			firstLetterIndex = i;
+			break;
+		}
+	}
+	/* get the index of the last letter */
+
+	lastLetterIndex = strlen(string) - 1;
+
+
+	for (int j = lastLetterIndex ; j >= 0 ; j--) {
+
+		if((*(string + j) != WHITESPACE) && (*(string + j) != TAB)){
+			realLastLetterIndex = j;
+			break;
+		}
+	}
+
+	for (int k = firstLetterIndex; k <= realLastLetterIndex; k++ ) {
+
+		if((*(string + k) == WHITESPACE) || (*(string + k) == TAB) ||
+				(*(string + k) == VERTICAL) || (*(string + k) == NEW_LINE)){
 			return false;
 		}
-		i++;
+
 	}
 	return true;
-}
 
+}
 
 bool isLineCommentLine(char* line){
 	char c = ' ';
@@ -785,8 +899,8 @@ void assignDefaultValues(SPConfig config){
 
 void printVariableValuesOfConfig(SPConfig config){
 	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
-	char imagePath[1024];
-	char pcaPath[1024];
+/*	char imagePath[1024];
+	char pcaPath[1024];*/
 
 	printf("***********printing config values***********\n");
 	if(config == NULL){
@@ -794,8 +908,8 @@ void printVariableValuesOfConfig(SPConfig config){
 		return;
 	}
 
-	spConfigGetImagePath(imagePath, config, 1);
-	spConfigGetPCAPath(pcaPath, config);
+	/*SP_CONFIG_MSG getImagePathMSG = spConfigGetImagePath(imagePath, config, 1);
+	SP_CONFIG_MSG getPCAPathMSG = spConfigGetPCAPath(pcaPath, config);*/
 
 	printf("spImagesDirectory = %s\n",spConfigGetspImageDirectory(config));
 	printf("spImagesPrefix = %s\n",spConfigGetspImagesPrefix(config));
