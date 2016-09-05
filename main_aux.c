@@ -161,7 +161,7 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 	kdTree otherChild = NULL;
 	SP_BPQUEUE_MSG bpqReruenMsg = SP_BPQUEUE_SUCCESS;
 
-	double bpqMaxVal = spBPQueueMaxValue(bpq);
+	double bpqMaxVal = -1.0;
 	double currNodeVal = kdTreeGetVal(currNode);
 	int currDimension = kdTreeGetDimension(currNode);
 	double queryPointAxisCoor = spPointGetAxisCoor(queryPoint,currDimension );
@@ -215,6 +215,7 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 	}
 
 	kNearestNeighbors(chosenChild, bpq, queryPoint);
+	bpqMaxVal = spBPQueueMaxValue(bpq);
 
 	if ((!spBPQueueIsFull(bpq)) || (pow((currNodeVal - queryPointAxisCoor),2) < bpqMaxVal )) {
 		kNearestNeighbors(otherChild, bpq, queryPoint);
