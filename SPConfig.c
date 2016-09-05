@@ -188,7 +188,7 @@ SPConfig spConfigAlternativeCreate();
 int main() {
 
 	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
-	SPConfig conf = spConfigCreate("a.txt", &msg);
+	SPConfig conf = spConfigCreate("spcbir.config", &msg);
 	printVariableValuesOfConfig(conf);
 	return 0;
 }*/
@@ -218,6 +218,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 		*msg = SP_CONFIG_CANNOT_OPEN_FILE;
 		return NULL;
 	}
+
 	assignDefaultValues(config);
 
 	/* for each line in the configuration file*/
@@ -250,8 +251,11 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 		while(string != NULL ){
 
 			/*makes sure the string (value or variable name) doesn't contain any spaces*/
-			if (false == isStringValid(string)) {
 
+
+			if (false == isStringValid(string)) {
+				printf("string=%s, len=%d\n",string,strlen(string));
+				printf("DEBUG: isStringValid == false\n");
 				printf(INVALID_CONFIG_LINE_ERROR_MSG, filename, configLineCounter );
 				*msg = SP_CONFIG_INVALID_ARGUMENT;
 				free(config);
@@ -809,21 +813,25 @@ bool isStringValid(char* string){
 			break;
 		}
 	}
+
 	/* get the index of the last letter */
 
 	lastLetterIndex = strlen(string) - 1;
 
 
 	for (int j = lastLetterIndex ; j >= 0 ; j--) {
-
+		printf("DEBUG: j=%d\n",j);
 		if((*(string + j) != WHITESPACE) && (*(string + j) != TAB)){
+			printf("DEBUG: j=%d\n,",j);
 			realLastLetterIndex = j;
 			break;
 		}
 	}
 
-	for (int k = firstLetterIndex; k <= realLastLetterIndex; k++ ) {
+	printf("firstLetterIndex=%d, realLastLetterIndex=%d\n",firstLetterIndex,realLastLetterIndex);
 
+	for (int k = firstLetterIndex; k <= realLastLetterIndex; k++ ) {
+		printf("*(string + %d)=%c\n",k,*(string + k));
 		if((*(string + k) == WHITESPACE) || (*(string + k) == TAB) ||
 				(*(string + k) == VERTICAL) || (*(string + k) == NEW_LINE)){
 			return false;

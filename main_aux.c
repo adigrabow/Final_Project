@@ -187,7 +187,8 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 		}
 
 		bpqReruenMsg = spBPQueueEnqueue(bpq, element);
-		if (bpqReruenMsg != SP_BPQUEUE_SUCCESS) {
+
+		if (SP_BPQUEUE_SUCCESS != bpqReruenMsg || (SP_BPQUEUE_FULL != bpqReruenMsg)) {
 			spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ENQUEUE_TO_BPQ,
 					__FILE__, __func__, __LINE__ );
 			spListElementDestroy(element);
