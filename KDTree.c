@@ -20,6 +20,23 @@
  * Create a destroy function for the tree.
  * */
 
+
+/****************************
+ Help Functions Declarations
+ ****************************/
+
+/**
+ * The function prints the pointArray field in kdArray arr.
+ *
+ * @param arr - a kdArray
+ * @param numOfPoints - number of points in pointArray field
+ *
+ *
+ *  */
+
+void printPointIndex(kdArray arr, int numOfPoints);
+
+
 /******************
  Logger Messages
  *****************/
@@ -193,7 +210,10 @@ SPPoint kdTreeGetData(kdTree node){
 		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
 		return NULL;
 	}
-
+	if (NULL == node->data) {
+		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENTS_FAILED_TO_MEET_CONSTRAINTS,__FILE__, __func__, __LINE__ );
+		return NULL;
+	}
 	SPPoint dataCopy = spPointCopy(node->data);
 	return dataCopy;
 }

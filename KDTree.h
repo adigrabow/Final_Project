@@ -1,7 +1,7 @@
 /*
  * KDTree.h
  *
- *  Created on: 27 αιεμ 2016
+ *  Created on: 27 ‡“ 2016
  *      Author: Maayan Sivroni
  */
 #include "SPConfig.h"
@@ -108,15 +108,3 @@ SPPoint kdTreeGetData(kdTree node);
  *  */
 
 void destroyKdTree(kdTree node);
-//TODO move this function to kdArray.c if needed at all.
-
-/**
- * The function prints the pointArray field in kdArray arr.
- *
- * @param arr - a kdArray
- * @param numOfPoints - number of points in pointArray field
- *
- *
- *  */
-
-void printPointIndex(kdArray arr, int numOfPoints);

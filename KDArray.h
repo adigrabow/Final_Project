@@ -107,17 +107,4 @@ void destroyKdArray(kdArray arr);
  *  */
 int compareSortPoints(const void * ptr1, const void * ptr2);
 
-/*
- * This function is called only from 'Split' and since no sorting is needed,
- * it creates a new KDArray in O(n) time.
- *
- * @param	arr				the kdArray
- * @param	X				help array (see more details in PDF)
- * @param	map				map array (see more details in PDF)
- * @param	side			a flag, 0 iff left side and 1 iff right side
- *
- * @return	kdArray			on success the kdarray
- * 								on failure NULL
- ***/
 
-kdArray initFromSplit(kdArray arr, int* X,int * map,int side);
