@@ -188,12 +188,16 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 
 		bpqReruenMsg = spBPQueueEnqueue(bpq, element);
 
-		if (SP_BPQUEUE_SUCCESS != bpqReruenMsg || (SP_BPQUEUE_FULL != bpqReruenMsg)) {
+
+
+		if (SP_BPQUEUE_INVALID_ARGUMENT == bpqReruenMsg ||
+				SP_BPQUEUE_OUT_OF_MEMORY == bpqReruenMsg ) {
 			spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ENQUEUE_TO_BPQ,
 					__FILE__, __func__, __LINE__ );
 			spListElementDestroy(element);
 			return;
 		}
+
 
 		spListElementDestroy(element);
 

@@ -254,8 +254,8 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
 
 
 			if (false == isStringValid(string)) {
-				printf("string=%s, len=%d\n",string,strlen(string));
-				printf("DEBUG: isStringValid == false\n");
+			//	printf("string=%s, len=%d\n",string,strlen(string));
+			//	printf("DEBUG: isStringValid == false\n");
 				printf(INVALID_CONFIG_LINE_ERROR_MSG, filename, configLineCounter );
 				*msg = SP_CONFIG_INVALID_ARGUMENT;
 				free(config);
@@ -820,18 +820,18 @@ bool isStringValid(char* string){
 
 
 	for (int j = lastLetterIndex ; j >= 0 ; j--) {
-		printf("DEBUG: j=%d\n",j);
+	/*	printf("DEBUG: j=%d\n",j);*/
 		if((*(string + j) != WHITESPACE) && (*(string + j) != TAB)){
-			printf("DEBUG: j=%d\n,",j);
+			/*printf("DEBUG: j=%d\n,",j);*/
 			realLastLetterIndex = j;
 			break;
 		}
 	}
 
-	printf("firstLetterIndex=%d, realLastLetterIndex=%d\n",firstLetterIndex,realLastLetterIndex);
+	//printf("firstLetterIndex=%d, realLastLetterIndex=%d\n",firstLetterIndex,realLastLetterIndex);
 
 	for (int k = firstLetterIndex; k <= realLastLetterIndex; k++ ) {
-		printf("*(string + %d)=%c\n",k,*(string + k));
+		//printf("*(string + %d)=%c\n",k,*(string + k));
 		if((*(string + k) == WHITESPACE) || (*(string + k) == TAB) ||
 				(*(string + k) == VERTICAL) || (*(string + k) == NEW_LINE)){
 			return false;
