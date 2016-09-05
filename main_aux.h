@@ -20,6 +20,7 @@ typedef struct Img {
 #define CONFIG_DEFAULT ("spcbir.config")
 #define ENTERED_CONFIG_FILE_NAME ("-c")
 #define EXIT_PROGRAM ("<>")
+#define EXIT_CONSOLE_MSG ("Exiting...\n")
 #define WRITE_TO_FILE ("w+")
 #define BEST_CANIDATES ("Best candidates for - %s - are:\n")
 #define ENTER_QUERY ("Please enter an image path:\n")
