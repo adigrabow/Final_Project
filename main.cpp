@@ -312,9 +312,21 @@ int main(int argc, char * argv[]){
 			}
 		}
 
+
 		/* Convert from (int *) to (Img *) and order by hits */
 		Img * allPicsCountOrdered = initImgArray(allPicsCount, numOfPics);
+		//todo debug logger
+		printf("sorted indexes [");
+		for (i=0; i<numOfPics; i++){
+			printf(" %d ,", allPicsCountOrdered[i].index);
+		}
+		printf("]\n");
 
+		printf("number of hits [");
+		for (i=0; i<numOfPics; i++){
+			printf(" %d ,", allPicsCountOrdered[i].hits);
+		}
+		printf("]\n");
 		/* checks how many pictures were updated during the search */
 		for (i = 0; i < numOfPics; i++ ){
 			if (allPicsCountOrdered[i].hits >0){
