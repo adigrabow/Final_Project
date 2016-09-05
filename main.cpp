@@ -1,4 +1,3 @@
-
 /*include c library */
 #include <cstdlib>
 #include <cstddef>
@@ -13,12 +12,8 @@ using namespace std;
 
 
 extern "C"{
-/*include your own C source files */
-//#include "KDArray.h"
-//#include "KDTree.h"
-#include "SPPoint.h"
+
 #include "SPLogger.h"
-#include "SPConfig.h"
 #include "main_aux.h"
 }
 
@@ -185,7 +180,7 @@ int main(int argc, char * argv[]){
 		return 0;
 	}
 
-	sp::ImageProc imageProc = sp::ImageProc(config); //  init imageProc
+	sp::ImageProc imageProc = sp::ImageProc(config); //  init imageProc //TODO I put this line outside the "if"
 
 	/*************
 	 Preprocessing
@@ -307,7 +302,6 @@ int main(int argc, char * argv[]){
 
 				SPPoint p = spPointCopy(pointArray[i]);
 				kNearestNeighbors(tree,bpq,p);
-				spPointDestroy(p);
 				addToCount(bpq,allPicsCount);
 				spBPQueueDestroy(bpq);
 			}
@@ -317,6 +311,7 @@ int main(int argc, char * argv[]){
 		/* Convert from (int *) to (Img *) and order by hits */
 		Img * allPicsCountOrdered = initImgArray(allPicsCount, numOfPics);
 		//todo debug logger
+		/*
 		printf("sorted indexes [");
 		for (i=0; i<numOfPics; i++){
 			printf(" %d ,", allPicsCountOrdered[i].index);
@@ -328,6 +323,9 @@ int main(int argc, char * argv[]){
 			printf(" %d ,", allPicsCountOrdered[i].hits);
 		}
 		printf("]\n");
+
+		*/
+
 		/* checks how many pictures were updated during the search */
 		for (i = 0; i < numOfPics; i++ ){
 			if (allPicsCountOrdered[i].hits >0){
@@ -388,7 +386,6 @@ int main(int argc, char * argv[]){
 		scanf("%s", query);
 	}
 
-	printf(EXIT_CONSOLE_MSG);
 	/******************************
 	 Free all allocations and Exit
 	 *****************************/
@@ -400,5 +397,3 @@ int main(int argc, char * argv[]){
 	spLoggerPrintInfo(EXIT_FROM_MAIN_MSG);
 	return 0;
 }
-
-

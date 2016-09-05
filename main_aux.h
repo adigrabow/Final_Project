@@ -1,9 +1,13 @@
 /*
  * main_aux.h
+
  *
- *  Created on: 29 αιεμ 2016
+ *  Created on: 29 ‡“ 2016
  *      Author: Maayan Sivroni
  */
+
+#ifndef MAIN_AUX_H
+#define MAIN_AUX_H
 
 typedef struct Img {
 	int index; /*this will store the index of the image this feature belongs to */
@@ -12,7 +16,6 @@ typedef struct Img {
 }Img;
 
 #include "KDTree.h"
-#include "SPConfig.h"
 #include "SPBPriorityQueue.h"
 
 
@@ -20,7 +23,6 @@ typedef struct Img {
 #define CONFIG_DEFAULT ("spcbir.config")
 #define ENTERED_CONFIG_FILE_NAME ("-c")
 #define EXIT_PROGRAM ("<>")
-#define EXIT_CONSOLE_MSG ("Exiting...\n")
 #define WRITE_TO_FILE ("w+")
 #define BEST_CANIDATES ("Best candidates for - %s - are:\n")
 #define ENTER_QUERY ("Please enter an image path:\n")
@@ -189,3 +191,5 @@ Img * initImgArray(int * allPicsCount, int numOfPics);
  *  returns an int (f2->hits - f1->hits)
  *  */
 int compareHits (const void * a, const void * b);
+
+#endif /* MAIN_AUX_H */

@@ -5,7 +5,6 @@
  *      Author: Maayan Sivroni
  */
 
-#include "KDArray.h"
 #include "KDTree.h"
 #include <stddef.h>
 #include <stdio.h>

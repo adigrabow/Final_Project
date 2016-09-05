@@ -5,15 +5,11 @@
  *      Author: Maayan Sivroni
  */
 
-#include "SPConfig.h"
-//#include "SPPoint.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
-#include "KDArray.h"
-#include "SPBPriorityQueue.h"
 #include <limits.h> /* for INT_MIN, INT_MAX - for function extractIndexFromQuery */
 #include "main_aux.h"
 #include <string.h>

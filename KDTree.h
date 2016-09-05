@@ -4,9 +4,12 @@
  *  Created on: 27 ‡ŽŒ“ 2016
  *      Author: Maayan Sivroni
  */
+#ifndef KDTREE_H_
+#define KDTREE_H_
+
+
 #include "SPConfig.h"
 #include "KDArray.h"
-#include "SPPoint.h"
 
 typedef struct KDTreeNode* kdTree;
 
@@ -108,3 +111,5 @@ SPPoint kdTreeGetData(kdTree node);
  *  */
 
 void destroyKdTree(kdTree node);
+
+#endif /* KDTREE_H_ */

@@ -4,7 +4,8 @@
  *  Created on: Jul 22, 2016
  *      Author: adigrabow
  */
-
+#ifndef KDARRAY_H_
+#define KDARRAY_H_
 #include "SPPoint.h"
 
 typedef struct SPKDArray* kdArray;
@@ -107,4 +108,4 @@ void destroyKdArray(kdArray arr);
  *  */
 int compareSortPoints(const void * ptr1, const void * ptr2);
 
-
+#endif /* KDARRAY_H_ */
