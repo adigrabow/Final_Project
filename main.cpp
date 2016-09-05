@@ -13,7 +13,7 @@ using namespace std;
 
 extern "C"{
 
-#include "SPLogger.h"
+//#include "SPLogger.h"
 #include "main_aux.h"
 }
 

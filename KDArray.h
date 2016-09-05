@@ -6,6 +6,7 @@
  */
 #ifndef KDARRAY_H_
 #define KDARRAY_H_
+#include "SPLogger.h"
 #include "SPPoint.h"
 
 typedef struct SPKDArray* kdArray;
