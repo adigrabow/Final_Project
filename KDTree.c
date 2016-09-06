@@ -209,10 +209,10 @@ SPPoint kdTreeGetData(kdTree node){
 		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
 		return NULL;
 	}
-	if (NULL == node->data) {
+	/*if (NULL == node->data) {
 		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENTS_FAILED_TO_MEET_CONSTRAINTS,__FILE__, __func__, __LINE__ );
 		return NULL;
-	}
+	}*/
 	SPPoint dataCopy = spPointCopy(node->data);
 	return dataCopy;
 }

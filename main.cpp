@@ -17,6 +17,8 @@ extern "C"{
 #include "main_aux.h"
 }
 
+//TODO need to add free to malloced objects (config, logger, imageProc...)
+// at all logger msgs which after we exit the program!
 
 //#define MAX 1024
 //#define ENTER_QUERY "Please enter an image path:\n"
@@ -50,7 +52,7 @@ int main(int argc, char * argv[]){
 	int  pointerToTotalFeat = -1; /*from extractFromFiles function */
 	int numOfFeats = 0; /* a pointer in which the actual number of feats extracted */
 	int totalFeat = 0; /* convert the pointer to int */
-	int index = 0; /* extracted from query */
+	//int index = 0; /* extracted from query */
 	char loggerFileName[_MAX] = {0};
 	char featPath [_MAX] = {0};
 	char imagePath [_MAX] = {0};
@@ -180,7 +182,9 @@ int main(int argc, char * argv[]){
 		return 0;
 	}
 
-	sp::ImageProc imageProc = sp::ImageProc(config); //  init imageProc //TODO I put this line outside the "if"
+	/* Initialize imageProc */
+	sp::ImageProc * imageProc = NULL;
+	imageProc = new sp::ImageProc(config);
 
 	/*************
 	 Preprocessing
@@ -194,6 +198,7 @@ int main(int argc, char * argv[]){
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_EXTRACTION_MODE,
 				__FILE__, __func__, __LINE__ );
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+		delete imageProc;
 		return 0;
 	}
 
@@ -217,7 +222,7 @@ int main(int argc, char * argv[]){
 			}
 
 			/* get points of image i */
-			pointArrayPerImage =  imageProc.getImageFeatures(imagePath, i ,&numOfFeats);
+			pointArrayPerImage =  imageProc->getImageFeatures(imagePath, i ,&numOfFeats);
 
 			/*featPath is the name of the file were all the features are saved*/
 			msg = spConfigGetImagePathFeat(featPath, config,i);
@@ -282,7 +287,7 @@ int main(int argc, char * argv[]){
 	while (strcmp(EXIT_PROGRAM,query) != 0){
 
 		spLoggerPrintInfo(LOGGER_INFO_WORKING_ON_NEW_QUERY);
-		index = extractIndexFromQuery(query);
+		//index = extractIndexFromQuery(query);
 		allPicsCount = initCount(numOfPics);
 		/* Please note that in case an error occurs the logger print is inside the function*/
 		if (NULL == allPicsCount) {
@@ -290,9 +295,14 @@ int main(int argc, char * argv[]){
 			return 0;
 		}
 
-		/* for each point of image-(index) find kNearestNeighbors */
-		for (i = 0; i < totalFeat; i++){
-			if (spPointGetIndex(pointArray[i]) == index){
+		/* get points of query image - its index will be numOfPics
+		 * (images in directory are indexes 0-(numOfPics-1)) */
+
+		pointArrayPerImage =  imageProc->getImageFeatures(query, numOfPics ,&numOfFeats);
+
+		/* for each point of query find kNearestNeighbors */
+
+		for (i = 0; i < numOfFeats; i++){
 				bpq = initBPQ(config);
 
 				if (NULL == bpq) {
@@ -300,11 +310,12 @@ int main(int argc, char * argv[]){
 					return 0;
 				}
 
-				SPPoint p = spPointCopy(pointArray[i]);
+				SPPoint p = spPointCopy(pointArrayPerImage[i]);
 				kNearestNeighbors(tree,bpq,p);
 				addToCount(bpq,allPicsCount);
+				spPointDestroy(p);
 				spBPQueueDestroy(bpq);
-			}
+
 		}
 
 
@@ -356,7 +367,7 @@ int main(int argc, char * argv[]){
 					return 0;
 				}
 
-				imageProc.showImage(imagePathToDisplay);// present pic
+				imageProc->showImage(imagePathToDisplay);// present pic
 			}
 		}
 		/* NON-MINIMAL GUI */
@@ -386,14 +397,19 @@ int main(int argc, char * argv[]){
 		scanf("%s", query);
 	}
 
+	/* print to console Exiting... */
+	printf(EXIT_PROGRAM_MSG);
+	fflush(stdout);
 	/******************************
 	 Free all allocations and Exit
 	 *****************************/
 	spConfigDestroy(config);
 	destroyKdTree(tree);
 	destroyKdArray(kdArr);
-	free(pointArray);//TODO maybe we need to free every point in pointArray and then free the array?
+	free(pointArray);
 	spLoggerPrintInfo(LOGGER_INFO_FINISHED_SUCCESFULY);
 	spLoggerPrintInfo(EXIT_FROM_MAIN_MSG);
+	delete imageProc;
+	spLoggerDestroy();
 	return 0;
 }

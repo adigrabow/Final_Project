@@ -2,7 +2,7 @@
  * main_aux.h
 
  *
- *  Created on: 29 ‡ŽŒ“ 2016
+ *  Created on: 29 2016
  *      Author: Maayan Sivroni
  */
 
@@ -23,6 +23,7 @@ typedef struct Img {
 #define CONFIG_DEFAULT ("spcbir.config")
 #define ENTERED_CONFIG_FILE_NAME ("-c")
 #define EXIT_PROGRAM ("<>")
+#define EXIT_PROGRAM_MSG ("Exiting...\n")
 #define WRITE_TO_FILE ("w+")
 #define BEST_CANIDATES ("Best candidates for - %s - are:\n")
 #define ENTER_QUERY ("Please enter an image path:\n")
