@@ -236,7 +236,7 @@ int compareSortPoints(const void * ptr1, const void * ptr2) {
 	}
 
 
-	else { /* in case of equality - choose the lower index */
+	//else { /* in case of equality - choose the lower index */
 		if (a->index > b->index) {
 			return 1;
 		}
@@ -244,8 +244,8 @@ int compareSortPoints(const void * ptr1, const void * ptr2) {
 			return -1;
 		}
 
-		return 0;
-	}
+	//}
+	return 0;
 }
 
 
