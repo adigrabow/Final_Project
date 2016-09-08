@@ -310,7 +310,16 @@ int compareHits (const void * a, const void * b){//WORKING
 	struct Img * f1 = (Img *) a;
 	struct Img * f2 = (Img *) b;
 
-	return(f2->hits - f1->hits);
+	if (f2->hits > f1->hits) {
+		return 1;
+	}
+	else if (f2->hits < f1->hits) {
+		return -1;
+	}
+
+
+	else return (f1->index - f2->index);
+	//return(f2->hits - f1->hits);
 
 }
 
