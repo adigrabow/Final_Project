@@ -17,11 +17,6 @@ extern "C"{
 #include "main_aux.h"
 }
 
-//TODO need to add free to malloced objects (config, logger, imageProc...)
-// at all logger msgs which after we exit the program!
-
-//#define MAX 1024
-//#define ENTER_QUERY "Please enter an image path:\n"
 
 int main(int argc, char * argv[]){
 
@@ -64,8 +59,9 @@ int main(int argc, char * argv[]){
 	/****************
 	 Creating Config
 	 ***************/
-
-	if (argc > 1) { /* if a filename was entered by user */
+	 
+	/* if a config filename was entered by user */
+	if (argc > 1) { 
 		if (( strcmp(argv[1], ENTERED_CONFIG_FILE_NAME) == 0) && (argc == 3)){
 			configFilename = argv[2];
 			isDefaultConfigFilename = false; /* update flag */
@@ -111,12 +107,12 @@ int main(int argc, char * argv[]){
 	strcpy(loggerFileName, spConfigGetspLoggerFilename(config));
 	loggerLevel = spConfigGetspLoggerLevel(config);
 
-	if (loggerFileName == NULL) {
+	if (loggerFileName == NULL) { //TODO fix warning
 		printf(REGULAR_MSG_LOGGER_FILE_NAME_IS_NULL);
 		return 0;
 	}
 
-	if ( (-1) == loggerLevel) {
+	if ( (-1) == loggerLevel) { //TODO fix warning
 		printf(REGULAR_MSG_LOGGER_FILE_LEVEL_IS_NEGATIVE);
 		return 0;
 	}
@@ -149,6 +145,9 @@ int main(int argc, char * argv[]){
 		spLoggerPrintError(LOGGER_ERROR_CANNOT_GET_NUM_OF_IMAGES,
 				__FILE__, __func__, __LINE__ );
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+		spConfigDestroy(config);
+		spLoggerDestroy();
+		
 		return 0;
 	}
 
@@ -160,6 +159,9 @@ int main(int argc, char * argv[]){
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_NUM_OF_SIMILAR_IMGAGES_FROM_CONFIG,
 				__FILE__, __func__, __LINE__ );
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+		spConfigDestroy(config);
+		spLoggerDestroy();
+		
 		return 0;
 
 	}
@@ -168,6 +170,9 @@ int main(int argc, char * argv[]){
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_SPLIT_METHOD_FROM_CONFIG,
 				__FILE__, __func__, __LINE__ );
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+		spConfigDestroy(config);
+		spLoggerDestroy();
+		
 		return 0;
 
 	}
@@ -179,6 +184,8 @@ int main(int argc, char * argv[]){
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_IS_MINIMAL_GUI,
 				__FILE__, __func__, __LINE__ );
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+		spConfigDestroy(config);
+		spLoggerDestroy();
 		return 0;
 	}
 
@@ -199,6 +206,8 @@ int main(int argc, char * argv[]){
 				__FILE__, __func__, __LINE__ );
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
 		delete imageProc;
+		spConfigDestroy(config);
+		spLoggerDestroy();
 		return 0;
 	}
 
@@ -218,6 +227,9 @@ int main(int argc, char * argv[]){
 				spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_IMAGE_PATH,
 						__FILE__, __func__, __LINE__ );
 				spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+				spConfigDestroy(config);
+				spLoggerDestroy();
+				delete imageProc; //TODO check with Maayan
 				return 0;
 			}
 
@@ -230,6 +242,9 @@ int main(int argc, char * argv[]){
 				spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_FEATURE_PATH,
 						__FILE__, __func__, __LINE__ );
 				spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+				spConfigDestroy(config);
+				spLoggerDestroy();
+				delete imageProc;
 				return 0;
 			}
 
@@ -265,7 +280,11 @@ int main(int argc, char * argv[]){
 	kdArr = Init(pointArray,totalFeat);
 	/* Please note that in case an error occurs the logger print is inside the function*/
 	if ( NULL == kdArr) {
+		free(pointArray);
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+		spConfigDestroy(config);
+		spLoggerDestroy();
+		delete imageProc;
 		return 0;
 	}
 
@@ -277,6 +296,10 @@ int main(int argc, char * argv[]){
 	/* Please note that in case an error occurs the logger print is inside the function*/
 	if (NULL == tree) {
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+		spConfigDestroy(config);
+		spLoggerDestroy();
+		delete imageProc;
+		destroyKdArray(kdArr);
 		return 0;
 	}
 
@@ -292,6 +315,11 @@ int main(int argc, char * argv[]){
 		/* Please note that in case an error occurs the logger print is inside the function*/
 		if (NULL == allPicsCount) {
 			spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+			spConfigDestroy(config);
+			spLoggerDestroy();
+			delete imageProc;
+			destroyKdArray(kdArr);
+			destroyKdTree(tree);
 			return 0;
 		}
 
@@ -307,6 +335,12 @@ int main(int argc, char * argv[]){
 
 				if (NULL == bpq) {
 					spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+					spConfigDestroy(config);
+					spLoggerDestroy();
+					delete imageProc;
+					destroyKdArray(kdArr);
+					destroyKdTree(tree);
+					destroyCount(allPicsCount);
 					return 0;
 				}
 
@@ -364,6 +398,13 @@ int main(int argc, char * argv[]){
 					spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_IMAGE_PATH,
 											__FILE__, __func__, __LINE__ );
 					spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+					spConfigDestroy(config);
+					spLoggerDestroy();
+					delete imageProc;
+					destroyKdArray(kdArr);
+					destroyKdTree(tree);
+					destroyCount(allPicsCount);
+					free(allPicsCountOrdered);
 					return 0;
 				}
 
@@ -383,6 +424,13 @@ int main(int argc, char * argv[]){
 					spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_IMAGE_PATH,
 											__FILE__, __func__, __LINE__ );
 					spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+					spConfigDestroy(config);
+					spLoggerDestroy();
+					delete imageProc;
+					destroyKdArray(kdArr);
+					destroyKdTree(tree);
+					destroyCount(allPicsCount);
+					free(allPicsCountOrdered);
 					return 0;
 				}
 				printf("%s\n",imagePathToDisplay);
@@ -411,5 +459,9 @@ int main(int argc, char * argv[]){
 	spLoggerPrintInfo(EXIT_FROM_MAIN_MSG);
 	delete imageProc;
 	spLoggerDestroy();
+	//TODO ask Maayan about pointArrayPerImage
 	return 0;
 }
+
+
+
