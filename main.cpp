@@ -229,7 +229,7 @@ int main(int argc, char * argv[]){
 				spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
 				spConfigDestroy(config);
 				spLoggerDestroy();
-				delete imageProc; //TODO check with Maayan
+				delete imageProc;
 				return 0;
 			}
 
@@ -244,6 +244,7 @@ int main(int argc, char * argv[]){
 				spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
 				spConfigDestroy(config);
 				spLoggerDestroy();
+				free(pointArrayPerImage);
 				delete imageProc;
 				return 0;
 			}
@@ -283,6 +284,7 @@ int main(int argc, char * argv[]){
 		free(pointArray);
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
 		spConfigDestroy(config);
+		free(pointArrayPerImage);
 		spLoggerDestroy();
 		delete imageProc;
 		return 0;
@@ -299,6 +301,7 @@ int main(int argc, char * argv[]){
 		spConfigDestroy(config);
 		spLoggerDestroy();
 		delete imageProc;
+		free(pointArrayPerImage);
 		destroyKdArray(kdArr);
 		return 0;
 	}
@@ -318,6 +321,7 @@ int main(int argc, char * argv[]){
 			spConfigDestroy(config);
 			spLoggerDestroy();
 			delete imageProc;
+			free(pointArrayPerImage);
 			destroyKdArray(kdArr);
 			destroyKdTree(tree);
 			return 0;
@@ -338,6 +342,7 @@ int main(int argc, char * argv[]){
 					spConfigDestroy(config);
 					spLoggerDestroy();
 					delete imageProc;
+					free(pointArrayPerImage);
 					destroyKdArray(kdArr);
 					destroyKdTree(tree);
 					destroyCount(allPicsCount);
@@ -401,6 +406,7 @@ int main(int argc, char * argv[]){
 					spConfigDestroy(config);
 					spLoggerDestroy();
 					delete imageProc;
+					free(pointArrayPerImage);
 					destroyKdArray(kdArr);
 					destroyKdTree(tree);
 					destroyCount(allPicsCount);
@@ -429,6 +435,7 @@ int main(int argc, char * argv[]){
 					delete imageProc;
 					destroyKdArray(kdArr);
 					destroyKdTree(tree);
+					free(pointArrayPerImage);
 					destroyCount(allPicsCount);
 					free(allPicsCountOrdered);
 					return 0;
@@ -459,7 +466,7 @@ int main(int argc, char * argv[]){
 	spLoggerPrintInfo(EXIT_FROM_MAIN_MSG);
 	delete imageProc;
 	spLoggerDestroy();
-	//TODO ask Maayan about pointArrayPerImage
+	free(pointArrayPerImage);
 	return 0;
 }
 

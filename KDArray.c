@@ -265,20 +265,22 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	}
 
 	memcpy(P,getPointArrayFromKDArray(kdArr), sizeof(SPPoint)* getSizeFromKDArray(kdArr));
-
+	int size = getSizeFromKDArray(kdArr);
 	kdArray * result = (kdArray*) malloc(sizeof(struct SPKDArray) * 2); /* result array will include left and right array */
 	if (NULL == result) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEM_FOR_KDARRAY,__FILE__, __func__, __LINE__ );
+	//	destroySPPointArray(P,size);
 		free(P);
 		return NULL;
 	}
 
-	int size = getSizeFromKDArray(kdArr);
+
 	int halfIndex = (size + 1) / 2; /* half is index n/2 rounded up */
 
 	int * X = (int *) malloc(sizeof(int)*size);
 	if (NULL == X) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
+	//	destroySPPointArray(P,size);
 		free(P);
 		free(result);
 		return NULL;
@@ -287,6 +289,7 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	int * map1 = (int *) malloc(sizeof(int)*size);
 	if (NULL == map1) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
+		//destroySPPointArray(P,size);
 		free(P);
 		free(X);
 		free(result);
@@ -296,6 +299,7 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	int * map2 = (int *) malloc(sizeof(int)*size);
 	if (NULL == map2) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
+	//	destroySPPointArray(P,size);
 		free(P);
 		free(X);
 		free(result);
@@ -306,6 +310,7 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	SPPoint * P1 = (SPPoint*)malloc(halfIndex * sizeof(SPPoint));
 	if(NULL == P1) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
+	//	destroySPPointArray(P,size);
 		free(P);
 		free(X);
 		free(result);
@@ -317,6 +322,7 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	SPPoint * P2 = (SPPoint*)malloc((size - halfIndex) * sizeof(SPPoint));
 	if (NULL == P2) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
+		//destroySPPointArray(P,size);
 		free(P);
 		free(X);
 		free(result);
@@ -358,12 +364,37 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	pointsWithIndexArr  P1_with_indexes = (pointsWithIndexArr)malloc(halfIndex * sizeof(pointWithPIndex));
 	if (!P1_with_indexes){
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
+	//	destroySPPointArray(P,size);
+		free(P);
+		free(X);
+		free(result);
+		free(map1);
+		free(map2);
+		free(P1);
+		free(P2);
+		//destroySPPointArray(P1,halfIndex);
+		//destroySPPointArray(P2,(size - halfIndex));
 		return NULL;
 	}
 	pointsWithIndexArr P2_with_indexes = (pointsWithIndexArr)malloc((size - halfIndex) * sizeof(pointWithPIndex));
 	if (!P2_with_indexes){
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
+		//destroySPPointArray(P,size);
+		free(P);
+		free(X);
+		free(result);
+		free(map1);
+		free(map2);
+		free(P1);
+		free(P2);
+
+		/* free P1_with_indexes */
+		for (i=0;i<halfIndex;i++){
+			spPointDestroy(P1_with_indexes[i].point);
+
+		}
 		free(P1_with_indexes);
+
 		return NULL;
 	}
 	i = 0;
@@ -423,12 +454,16 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 	Right = initFromSplit(kdArr,X,map2,side); /* create Right */
 
 	/* free allocations */
+	//destroySPPointArray(P,size);
+	free(P);
 	free(X);
 	free(map1);
 	free(map2);
 	free(P1);
 	free(P2);
-	free(P);
+	//destroySPPointArray(P1,halfIndex);
+	//destroySPPointArray(P2,(size - halfIndex));
+
 	/* update result */
 	result[0] = Left;
 	result[1] = Right;
@@ -470,7 +505,7 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 	if(NULL == pointArr) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEM_FOR_SPPOINT,__FILE__, __func__, __LINE__ );
 		free(copiedPointArr);
-		free(array);
+		destroyKdArray(array);
 		return NULL;
 	}
 
@@ -489,7 +524,7 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEM_FOR_MATRIX,__FILE__, __func__, __LINE__ );
 		free(copiedPointArr);
 		free(pointArr);
-		free(array);
+		destroyKdArray(array);
 		return NULL;
 	}
 
@@ -502,7 +537,7 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 			}
 			free(copiedPointArr);
 			free(pointArr);
-			free(array);
+			destroyKdArray(array);
 			free(mat);
 			return NULL;
 		}
@@ -535,17 +570,32 @@ kdArray initFromSplit(kdArray arr, int* X,int * map,int side){
 
 }
 
+void destroySPPointArray(SPPoint * arr, int size){
+	if ((arr == NULL) || (size <0)){
+		return;
+	}
+	for (int i=0; i<size; i++){
+		if (arr[i] != NULL){
+			spPointDestroy(arr[i]);
+		}
 
+	}
+	free(arr);
+}
 void destroyKdArray(kdArray arr){
 
 	if (NULL == arr) {
 		return;
 	}
 
-	for(int i = 0; i < arr->dim; i++){ //maybe arr->dim ?
+	int i;
+	for( i = 0; i < arr->dim; i++){ //maybe arr->dim ?
 		free(arr->mat[i]);
 	}
+
 	free(arr->mat);
-	free(arr->pointArray);
+
+	destroySPPointArray(arr->pointArray,arr->size);
+
 	free(arr);
 }

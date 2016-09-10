@@ -109,4 +109,6 @@ void destroyKdArray(kdArray arr);
  *  */
 int compareSortPoints(const void * ptr1, const void * ptr2);
 
+void destroySPPointArray(SPPoint * arr, int size);
+
 #endif /* KDARRAY_H_ */

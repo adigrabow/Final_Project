@@ -152,6 +152,7 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 
 	if (NULL == currNode || NULL == bpq || NULL == queryPoint ) {
 		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
+
 		return;
 	}
 
@@ -174,6 +175,7 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 		if (spPointGetDimension(currPoint) != spPointGetDimension(queryPoint)) {
 			spLoggerPrintError(LOGGER_ERROR_K_NEAREST_NEIGHBORS_CUR_NODE_AND_QUERY_HAVE_DIFFERENT_DIM,
 					__FILE__, __func__, __LINE__ );
+
 			return;
 		}
 
@@ -183,6 +185,7 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 		if (NULL == element){
 			spLoggerPrintError(LOGGER_ERROR_FAILED_TO_CREATE_SP_LIST_ELEMENT,
 					__FILE__, __func__, __LINE__ );
+			spPointDestroy(currPoint);
 			return;
 		}
 
@@ -195,12 +198,13 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 			spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ENQUEUE_TO_BPQ,
 					__FILE__, __func__, __LINE__ );
 			spListElementDestroy(element);
+			spPointDestroy(currPoint);
 			return;
 		}
 
 
 		spListElementDestroy(element);
-
+		spPointDestroy(currPoint);
 		return;
 	}
 
@@ -211,6 +215,7 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 	if (NULL == chosenChild) {
 		spLoggerPrintError(LOGGER_ERROR_KDTREE_CHOSEN_CHILD_IS_NULL,
 				__FILE__, __func__, __LINE__ );
+		spPointDestroy(currPoint);
 		return;
 	}
 
@@ -219,9 +224,14 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 
 	if ((!spBPQueueIsFull(bpq)) || (pow((currNodeVal - queryPointAxisCoor),2) < bpqMaxVal )) {
 		kNearestNeighbors(otherChild, bpq, queryPoint);
+		spPointDestroy(currPoint);
 	}
 
+	if (!currPoint){
+		spPointDestroy(currPoint);
+	}
 
+	spPointDestroy(currPoint);
 }
 
 
