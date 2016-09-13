@@ -108,7 +108,8 @@ void destroyKdArray(kdArray arr);
  *  (a->data - b->data) and if needed (a->index - b->index)
  *  */
 int compareSortPoints(const void * ptr1, const void * ptr2);
-
-void destroySPPointArray(SPPoint * arr, int size);
+void copySPPointArray(SPPoint* destArray,SPPoint* srcArray, int size );
+void destroyCopiedSPPointArray(SPPoint * arr, int size);
+void destroyMatrix (int** mat, int arrayDim );
 
 #endif /* KDARRAY_H_ */

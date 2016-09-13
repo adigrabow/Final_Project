@@ -39,11 +39,9 @@ SPPoint spPointCreate(double* data, int dim, int index){
 
 SPPoint spPointCopy(SPPoint source){
 	if (NULL == source) {
-		return NULL;
-	}
-	SPPoint target = malloc(sizeof(struct sp_point_t));
-	if(target == NULL)
-		return NULL;
+	        return NULL;
+	    }
+	SPPoint target;
 
 	target = spPointCreate(source->data, source->dim, source->index);
 	return target;

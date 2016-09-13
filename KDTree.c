@@ -74,7 +74,10 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 		node->val = -1.0;
 		node->left = NULL;
 		node->right = NULL;
-		SPPoint point = spPointCopy((getPointArrayFromKDArray(kdArr))[0]);
+		SPPoint * pointArray = getPointArrayFromKDArray(kdArr);
+		SPPoint point = spPointCopy(pointArray[0]);
+		destroyCopiedSPPointArray(pointArray,getSizeFromKDArray(kdArr));
+		free(pointArray);
 		node->data = point;
 		return node;
 	}
@@ -95,19 +98,21 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 	/* I assume that the following parameter from config - Use a getter after it is build */
 
 	if (splitMethod == MAX_SPREAD){
-
+		SPPoint * pointArr = getPointArrayFromKDArray(kdArr);//TODO moved outside the loop
 		/* create spreadArray - calculate spread for each dimension and choose the maximum */
 		for (i=0; i< getDimFromKDArray(kdArr); i++){
 
 			double max_coor, min_coor;
 			double * tmpDataArray1;
 			double * tmpDataArray2;
-			tmpDataArray1 = spPointGetData(getPointArrayFromKDArray(kdArr)[ getMatrixFromKDArray(kdArr)[i][getSizeFromKDArray(kdArr) -1] ]);
+
+			tmpDataArray1 = spPointGetData(pointArr[ getMatrixFromKDArray(kdArr)[i][getSizeFromKDArray(kdArr) -1] ]);
 			max_coor = tmpDataArray1[i];
 			free(tmpDataArray1);
-			tmpDataArray2 = spPointGetData(getPointArrayFromKDArray(kdArr)[ getMatrixFromKDArray(kdArr)[i][0] ]);
+			tmpDataArray2 = spPointGetData(pointArr[ getMatrixFromKDArray(kdArr)[i][0] ]);
 			min_coor = tmpDataArray2[i];
 			free(tmpDataArray2);
+
 			spreadArray[i] = max_coor-min_coor;
 
 			if (spreadArray[i] >= max){  /*find max spread from array*/
@@ -122,6 +127,8 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 				break;
 			}
 		}
+		destroyCopiedSPPointArray(pointArr,getSizeFromKDArray(kdArr));
+		free(pointArr);
 
 	}
 
@@ -145,12 +152,18 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 		free(spreadArray);
 		return NULL;
 	}
-
+	free(spreadArray);//TODO added free for spreadArray
 	node->dim = index;
-	SPPoint point = (getPointArrayFromKDArray(twoKdArrays[0])) [ getMatrixFromKDArray(twoKdArrays[0])[index][getSizeFromKDArray(twoKdArrays[0]) -1] ];
+	SPPoint * pointArr2 = getPointArrayFromKDArray(twoKdArrays[0]);
+	SPPoint point = spPointCopy(pointArr2 [ getMatrixFromKDArray(twoKdArrays[0])[index][getSizeFromKDArray(twoKdArrays[0]) -1] ]);
 	tmpDataArray = spPointGetData(point);
-	node->val = tmpDataArray[index];
+	double value = tmpDataArray[index];
+	node->val = value;
+	destroyCopiedSPPointArray(pointArr2,getSizeFromKDArray(twoKdArrays[0]));
+	free(pointArr2);
 	free(tmpDataArray);
+	spPointDestroy(point);
+
 	// last point in left array
 	kdArray leftArr = twoKdArrays[0];
 	kdArray rightArr = twoKdArrays[1];
@@ -159,7 +172,9 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 	node->left = left;
 	node->right = right;
 	node->data = NULL; // pointArray is an array that is a pointer to point
-
+/////////////////
+	destroyKdArray(leftArr);
+	destroyKdArray(rightArr);
 	return node;
 
 }
@@ -209,10 +224,7 @@ SPPoint kdTreeGetData(kdTree node){
 		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENT_IS_EMPTY,__FILE__, __func__, __LINE__ );
 		return NULL;
 	}
-	/*if (NULL == node->data) {
-		spLoggerPrintError(LOGGER_ERROR_FUNCTION_ARGUMENTS_FAILED_TO_MEET_CONSTRAINTS,__FILE__, __func__, __LINE__ );
-		return NULL;
-	}*/
+
 	SPPoint dataCopy = spPointCopy(node->data);
 	return dataCopy;
 }

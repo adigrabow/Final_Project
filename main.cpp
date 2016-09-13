@@ -25,7 +25,8 @@ int main(int argc, char * argv[]){
 	 **********************/
 
 	SPBPQueue bpq = NULL;
-	SPPoint* pointArrayPerImage = NULL; /* saves the points array of each image */
+	SPPoint* pointArrayPerImage = NULL; /* saves the points array of each image in extraction mode*/
+	SPPoint * pointArrayPerImageQuery = NULL; /* saves the points array for query image*/
 	SP_KDTREE_SPLIT_METHOD_TYPE splitMethod = MAX_SPREAD;
 	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
 	SPConfig config = NULL;
@@ -259,6 +260,10 @@ int main(int argc, char * argv[]){
 				fprintf(fp, "\n"); // line down after every data array is printed to file //
 			}
 			fclose(fp);
+
+			/////
+			destroyCopiedSPPointArray(pointArrayPerImage,numOfFeats);
+			free(pointArrayPerImage);
 		}
 		spLoggerPrintInfo(LOGGER_INFO_DONE_WITH_EXTRACTION_MODE);
 
@@ -330,7 +335,7 @@ int main(int argc, char * argv[]){
 		/* get points of query image - its index will be numOfPics
 		 * (images in directory are indexes 0-(numOfPics-1)) */
 
-		pointArrayPerImage =  imageProc->getImageFeatures(query, numOfPics ,&numOfFeats);
+		pointArrayPerImageQuery =  imageProc->getImageFeatures(query, numOfPics ,&numOfFeats);
 
 		/* for each point of query find kNearestNeighbors */
 
@@ -342,14 +347,14 @@ int main(int argc, char * argv[]){
 					spConfigDestroy(config);
 					spLoggerDestroy();
 					delete imageProc;
-					free(pointArrayPerImage);
+					free(pointArrayPerImageQuery);
 					destroyKdArray(kdArr);
 					destroyKdTree(tree);
 					destroyCount(allPicsCount);
 					return 0;
 				}
 
-				SPPoint p = spPointCopy(pointArrayPerImage[i]);
+				SPPoint p = spPointCopy(pointArrayPerImageQuery[i]);
 				kNearestNeighbors(tree,bpq,p);
 				addToCount(bpq,allPicsCount);
 				spPointDestroy(p);
@@ -445,6 +450,9 @@ int main(int argc, char * argv[]){
 			}
 		}
 
+		destroyCopiedSPPointArray(pointArrayPerImageQuery,numOfFeats);
+		free(pointArrayPerImageQuery);
+
 		free(allPicsCountOrdered);
 		destroyCount(allPicsCount);
 		printf(ENTER_QUERY);
@@ -461,12 +469,13 @@ int main(int argc, char * argv[]){
 	spConfigDestroy(config);
 	destroyKdTree(tree);
 	destroyKdArray(kdArr);
+	destroyCopiedSPPointArray(pointArray,totalFeat);
 	free(pointArray);
 	spLoggerPrintInfo(LOGGER_INFO_FINISHED_SUCCESFULY);
 	spLoggerPrintInfo(EXIT_FROM_MAIN_MSG);
 	delete imageProc;
 	spLoggerDestroy();
-	free(pointArrayPerImage);
+	//free(pointArrayPerImage);//TODO added comment
 	return 0;
 }
 
