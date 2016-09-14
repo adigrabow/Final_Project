@@ -249,6 +249,7 @@ void addToCount(SPBPQueue bpq,int * allPicsCount){
 		element = spBPQueuePeek(bpq); /* look at one element */
 		allPicsCount[spListElementGetIndex(element)]++; /*increase count for each image - each index */
 		spBPQueueDequeue(bpq); /* dequeue from queue */
+		spListElementDestroy(element);
 
 	}
 }
