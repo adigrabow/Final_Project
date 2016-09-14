@@ -336,7 +336,17 @@ int main(int argc, char * argv[]){
 		 * (images in directory are indexes 0-(numOfPics-1)) */
 
 		pointArrayPerImageQuery =  imageProc->getImageFeatures(query, numOfPics ,&numOfFeats);
-
+		if (NULL == pointArrayPerImageQuery) {
+			spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
+			spConfigDestroy(config);
+			spLoggerDestroy();
+			delete imageProc;
+			free(pointArrayPerImageQuery);
+			destroyKdArray(kdArr);
+			destroyKdTree(tree);
+			destroyCount(allPicsCount);
+			return 0;
+		}
 		/* for each point of query find kNearestNeighbors */
 
 		for (i = 0; i < numOfFeats; i++){
