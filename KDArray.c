@@ -335,7 +335,7 @@ kdArray * Split(kdArray kdArr, int coor) { /* coor = number of dimension that we
 
 	SPPoint * P = getPointArrayFromKDArray(kdArr);
 
-	kdArray * result = (kdArray*) malloc(sizeof(struct SPKDArray) * 2); /* result array will include left and right array */
+	kdArray * result = (kdArray*) malloc(sizeof(kdArray) * 2); /* result array will include left and right array */
 	if (NULL == result) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEM_FOR_KDARRAY,__FILE__, __func__, __LINE__ );
 		destroyCopiedSPPointArray(P,getSizeFromKDArray(kdArr));
