@@ -43,7 +43,7 @@ SPPoint *extractFromFiles(SPConfig config, int * size){ // WORKING
 	/***********************
 	*Variable Declarations
 	************************/
-	SP_CONFIG_MSG msg = NULL;
+	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
 	SPPoint* pointArray = NULL;
 	int totalSize = 0; /*size of the point array */
 	int numOfPics = spConfigGetNumOfImages(config, &msg); /* number of images */
