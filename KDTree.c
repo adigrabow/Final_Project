@@ -175,6 +175,7 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 /////////////////
 	destroyKdArray(leftArr);
 	destroyKdArray(rightArr);
+	free(twoKdArrays);
 	return node;
 
 }
