@@ -108,8 +108,32 @@ void destroyKdArray(kdArray arr);
  *  (a->data - b->data) and if needed (a->index - b->index)
  *  */
 int compareSortPoints(const void * ptr1, const void * ptr2);
+
+/**
+ * The function copies an array of SPPoints (copy SPPoint by SPPoint).
+ *
+ * @param destArray - a pointer to the memory space where the copied array will be saved
+ * @param srcArray - a pointer to the source array
+ * @param size - the size of the copied array
+
+ *  */
 void copySPPointArray(SPPoint* destArray,SPPoint* srcArray, int size );
+
+/**
+ * The function destroys a SPPoint array safely (free allocated memory).
+ *
+ * @param destArray - a pointer to the memory space where the copied array is saved
+ * @param size - the size of the copied array
+
+ *  */
 void destroyCopiedSPPointArray(SPPoint * arr, int size);
+
+/**
+ * The function destroys a int matrix safely (free allocated memory).
+ *
+ * @param mat - a pointer to the memory space where the matrix is saved
+ * @param arrayDim - the dim of the matrix
+ *  */
 void destroyMatrix (int** mat, int arrayDim );
 
 #endif /* KDARRAY_H_ */
