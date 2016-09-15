@@ -55,8 +55,10 @@ int main(int argc, char * argv[]){
 	char imagePathToDisplay [_MAX] = {0}; /* saves the image path that was created in  spConfigGetImagePath */
 	char query[_MAX] = {0}; /* the program will ask the user to enter an image path  */
 	//const char *EXIT = "<>"; /*if query == EXIT then end program */
-
-
+	int size = 0; 
+	int * ptr = NULL;
+	
+	
 	/****************
 	 Creating Config
 	 ***************/
@@ -296,8 +298,8 @@ int main(int argc, char * argv[]){
 	}
 
 	srand(time(NULL)); // requested once in program. for RANDOM mode in split tree //
-	int size = -1; // according to moab the first split needs to start from index 0 in incremental //
-	int * ptr = &size;
+	size = -1; // according to moab the first split needs to start from index 0 in incremental //
+	ptr = &size;
 
 	tree = init(kdArr,ptr,splitMethod);
 	/* Please note that in case an error occurs the logger print is inside the function*/
@@ -485,7 +487,7 @@ int main(int argc, char * argv[]){
 	spLoggerPrintInfo(EXIT_FROM_MAIN_MSG);
 	delete imageProc;
 	spLoggerDestroy();
-	//free(pointArrayPerImage);//TODO added comment
+	
 	return 0;
 }
 
