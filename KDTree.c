@@ -81,24 +81,41 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 		node->data = point;
 		return node;
 	}
-	double * spreadArray = (double *) malloc (sizeof(double)*getDimFromKDArray(kdArr)); /* will contain all spreads for MAX_SPREAD mode */
-
+	
+	/**********************
+	*Variable Declarations
+	***********************/
+	double * spreadArray = NULL;
+	int i;
+	double max= 0.0; /* for MAX_SPREAD */
+	int index = 0; /* the index of the dimension to split by */
+	kdArray * twoKdArrays = NULL;
+	double * tmpDataArray = NULL; /* In order to free the copied array we need to save it in a variable - for node->val */
+	SPPoint * pointArr = NULL; 
+	kdTree node = NULL;
+	
+	SPPoint * pointArr2 = NULL;
+	SPPoint point = NULL;
+	double value = 0.0;
+	kdArray leftArr = NULL;
+	kdArray rightArr = NULL;
+	kdTree left = NULL;
+	kdTree right = NULL;
+	/*******************************/
+	
+	spreadArray = (double *) malloc (sizeof(double)*getDimFromKDArray(kdArr)); /* will contain all spreads for MAX_SPREAD mode */
 	if (NULL == spreadArray) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
 		return NULL;
 	}
 
-	int i;
-	double max= 0.0; /* for MAX_SPREAD */
-	int index; /* the index of the dimension to split by */
-	kdArray * twoKdArrays;
-	double * tmpDataArray; /* In order to free the copied array we need to save it in a variable - for node->val */
+	
 
 	/* if array size is bigger than 1 then create tree recursively */
 	/* I assume that the following parameter from config - Use a getter after it is build */
 
 	if (splitMethod == MAX_SPREAD){
-		SPPoint * pointArr = getPointArrayFromKDArray(kdArr);//TODO moved outside the loop
+		pointArr = getPointArrayFromKDArray(kdArr);//TODO moved outside the loop
 		/* create spreadArray - calculate spread for each dimension and choose the maximum */
 		for (i=0; i< getDimFromKDArray(kdArr); i++){
 
@@ -121,7 +138,7 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 			}
 		}
 		/*	 find the index of max - the first index to be found*/
-		for (i=0; i< getDimFromKDArray(kdArr); i++){
+		for (i = 0; i < getDimFromKDArray(kdArr); i++){
 			if (spreadArray[i] == max){
 				index = i;
 				break;
@@ -145,8 +162,8 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 
 	twoKdArrays = Split(kdArr, index);
 
-	// create tree recursively
-	kdTree node = (kdTree)malloc(sizeof(struct KDTreeNode));
+	/* create tree recursively*/
+	node = (kdTree)malloc(sizeof(struct KDTreeNode));
 	if(node == NULL) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
 		free(spreadArray);
@@ -154,10 +171,10 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 	}
 	free(spreadArray);//TODO added free for spreadArray
 	node->dim = index;
-	SPPoint * pointArr2 = getPointArrayFromKDArray(twoKdArrays[0]);
-	SPPoint point = spPointCopy(pointArr2 [ getMatrixFromKDArray(twoKdArrays[0])[index][getSizeFromKDArray(twoKdArrays[0]) -1] ]);
+	pointArr2 = getPointArrayFromKDArray(twoKdArrays[0]);
+	point = spPointCopy(pointArr2 [ getMatrixFromKDArray(twoKdArrays[0])[index][getSizeFromKDArray(twoKdArrays[0]) -1] ]);
 	tmpDataArray = spPointGetData(point);
-	double value = tmpDataArray[index];
+	value = tmpDataArray[index];
 	node->val = value;
 	destroyCopiedSPPointArray(pointArr2,getSizeFromKDArray(twoKdArrays[0]));
 	free(pointArr2);
@@ -165,10 +182,10 @@ kdTree init(kdArray kdArr, int * prevIndex, SP_KDTREE_SPLIT_METHOD_TYPE splitMet
 	spPointDestroy(point);
 
 	// last point in left array
-	kdArray leftArr = twoKdArrays[0];
-	kdArray rightArr = twoKdArrays[1];
-	kdTree left = init(leftArr, &index, splitMethod);
-	kdTree right = init(rightArr, &index,  splitMethod);
+	leftArr = twoKdArrays[0];
+	rightArr = twoKdArrays[1];
+	left = init(leftArr, &index, splitMethod);
+	right = init(rightArr, &index,  splitMethod);
 	node->left = left;
 	node->right = right;
 	node->data = NULL; // pointArray is an array that is a pointer to point
