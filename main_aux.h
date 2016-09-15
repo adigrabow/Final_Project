@@ -68,9 +68,18 @@ typedef struct Img {
 #define LOGGER_INFO_DONE_WITH_EXTRACTION_MODE ("Done with extraction mode.\n")
 #define LOGGER_INFO_WORKING_ON_NEW_QUERY ("Started main-loop for a new query.\n")
 #define LOGGER_INFO_FINISHED_SUCCESFULY ("Succesfuly finished main function.\n")
+#define LOGGER_INFO_DONE_WITH_KDARRAY_INIT ("Succesfuly created KD-Array.\n")
+#define LOGGER_INFO_DONE_WITH_KDTREE_INIT ("Succesfuly created KD-Tree.\n")
+
+
 
 #define LOGGER_WAR_NUM_OF_UPDATED_HITS_SMALLER_THAN_NUM_OF_SIMILAR_IMG ("Number of updated hits is smaller than number of similar images.\n The num of images to be displayed will be smaller than expected.\n")
 
+#define LOGGER_DEBUG_NUM_OF_PICS ("Field numOfPics = %d (extracted from configuration file successfully)\n")
+#define LOGGER_DEBUG_NUM_OF_SIMILAR_IMGS ("Field numOfSimilarImages = %d (extracted from configuration file successfully)\n")
+#define LOGGER_DEBUG_SPLIT_METHOD ("Field splitMethod = %d (extracted from configuration file successfully)\n")
+#define LOGGER_DEBUG_IS_GUI ("Field isMinmalGui = %s (extracted from configuration file successfully)\n")
+#define LOGGER_DEBUG_IMG_PATH ("Field imagePath = %s (extracted from configuration file successfully)\n")
 
 
 /**

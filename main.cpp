@@ -13,14 +13,13 @@ using namespace std;
 
 extern "C"{
 
-//#include "SPLogger.h"
 #include "main_aux.h"
 }
 
 
 int main(int argc, char * argv[]){
 
-	/***********************
+	/**********************
 	 Variables Declarations
 	 **********************/
 
@@ -48,17 +47,20 @@ int main(int argc, char * argv[]){
 	int  pointerToTotalFeat = -1; /*from extractFromFiles function */
 	int numOfFeats = 0; /* a pointer in which the actual number of feats extracted */
 	int totalFeat = 0; /* convert the pointer to int */
-	//int index = 0; /* extracted from query */
 	char loggerFileName[_MAX] = {0};
 	char featPath [_MAX] = {0};
 	char imagePath [_MAX] = {0};
 	char imagePathToDisplay [_MAX] = {0}; /* saves the image path that was created in  spConfigGetImagePath */
 	char query[_MAX] = {0}; /* the program will ask the user to enter an image path  */
-	//const char *EXIT = "<>"; /*if query == EXIT then end program */
 	int size = 0; 
 	int * ptr = NULL;
 	
 	
+	char DEBUG_NUM_OF_PICS[_MAX] = {0};
+	char DEBUG_NUM_OF_SIMILAR_IMG[_MAX] = {0};
+	char DEBUG_SPLIT_METHOD[_MAX] = {0};
+	char DEBUG_IS_GUI[_MAX] = {0};
+	char DEBUG_IMG_PATH[_MAX] = {0};
 	/****************
 	 Creating Config
 	 ***************/
@@ -99,9 +101,6 @@ int main(int argc, char * argv[]){
 		return 0;
 	}
 
-	//SPConfig config = spConfigCreate("a.txt", &msg);
-	//SPConfig config = spConfigAlternativeCreate();
-
 	/***************
 	Creating Logger
 	 ****************/
@@ -110,12 +109,12 @@ int main(int argc, char * argv[]){
 	strcpy(loggerFileName, spConfigGetspLoggerFilename(config));
 	loggerLevel = spConfigGetspLoggerLevel(config);
 
-	if (loggerFileName == NULL) { //TODO fix warning
+	if (loggerFileName == NULL) {
 		printf(REGULAR_MSG_LOGGER_FILE_NAME_IS_NULL);
 		return 0;
 	}
 
-	if ( (-1) == loggerLevel) { //TODO fix warning
+	if ( (-1) == loggerLevel) {
 		printf(REGULAR_MSG_LOGGER_FILE_LEVEL_IS_NEGATIVE);
 		return 0;
 	}
@@ -150,9 +149,11 @@ int main(int argc, char * argv[]){
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
 		spConfigDestroy(config);
 		spLoggerDestroy();
-		
+		printf(EXIT_PROGRAM_MSG);
 		return 0;
 	}
+	sprintf(DEBUG_NUM_OF_PICS,LOGGER_DEBUG_NUM_OF_PICS, numOfPics);
+	spLoggerPrintDebug(DEBUG_NUM_OF_PICS, __FILE__, __func__, __LINE__ );
 
 	numOfSimilarImages = spConfigGetspNumOfSimilarImages(config); /* getter from config - we will display them */
 	splitMethod = spConfigGetspKDTreeSplitMethod(config);
@@ -164,7 +165,7 @@ int main(int argc, char * argv[]){
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
 		spConfigDestroy(config);
 		spLoggerDestroy();
-		
+		printf(EXIT_PROGRAM_MSG);
 		return 0;
 
 	}
@@ -175,13 +176,18 @@ int main(int argc, char * argv[]){
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
 		spConfigDestroy(config);
 		spLoggerDestroy();
-		
+		printf(EXIT_PROGRAM_MSG);
 		return 0;
 
 	}
 
-	isGui = spConfigMinimalGui(config, &msg);
+	sprintf(DEBUG_NUM_OF_SIMILAR_IMG,LOGGER_DEBUG_NUM_OF_SIMILAR_IMGS, numOfSimilarImages);
+	spLoggerPrintDebug(DEBUG_NUM_OF_SIMILAR_IMG, __FILE__, __func__, __LINE__ );
 
+	sprintf(DEBUG_SPLIT_METHOD, LOGGER_DEBUG_SPLIT_METHOD, splitMethod);
+	spLoggerPrintDebug(DEBUG_SPLIT_METHOD, __FILE__, __func__, __LINE__ );
+
+	isGui = spConfigMinimalGui(config, &msg);
 	/* making sure we were able to extract isMinimalGui from config*/
 	if (SP_CONFIG_INVALID_ARGUMENT == msg) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_IS_MINIMAL_GUI,
@@ -189,7 +195,19 @@ int main(int argc, char * argv[]){
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
 		spConfigDestroy(config);
 		spLoggerDestroy();
+		printf(EXIT_PROGRAM_MSG);
 		return 0;
+	}
+
+
+	if (true == isGui) {
+		sprintf(DEBUG_IS_GUI,LOGGER_DEBUG_IS_GUI, "true");
+		spLoggerPrintDebug(DEBUG_IS_GUI, __FILE__, __func__, __LINE__ );
+	}
+
+	if (false == isGui) {
+		sprintf(DEBUG_IS_GUI,LOGGER_DEBUG_IS_GUI, "false");
+		spLoggerPrintDebug(DEBUG_IS_GUI, __FILE__, __func__, __LINE__ );
 	}
 
 	/* Initialize imageProc */
@@ -211,6 +229,7 @@ int main(int argc, char * argv[]){
 		delete imageProc;
 		spConfigDestroy(config);
 		spLoggerDestroy();
+		printf(EXIT_PROGRAM_MSG);
 		return 0;
 	}
 
@@ -233,8 +252,13 @@ int main(int argc, char * argv[]){
 				spConfigDestroy(config);
 				spLoggerDestroy();
 				delete imageProc;
+				printf(EXIT_PROGRAM_MSG);
 				return 0;
 			}
+
+			sprintf(DEBUG_IMG_PATH,LOGGER_DEBUG_IMG_PATH, imagePath);
+			spLoggerPrintDebug(DEBUG_IMG_PATH, __FILE__, __func__, __LINE__ );
+
 
 			/* get points of image i */
 			pointArrayPerImage =  imageProc->getImageFeatures(imagePath, i ,&numOfFeats);
@@ -249,8 +273,11 @@ int main(int argc, char * argv[]){
 				spLoggerDestroy();
 				free(pointArrayPerImage);
 				delete imageProc;
+				printf(EXIT_PROGRAM_MSG);
 				return 0;
 			}
+
+
 
 			fp = fopen(featPath, WRITE_TO_FILE);
 			fprintf(fp, "%d#%d\n", numOfFeats,i); // first row is numOfFeats # index //
@@ -286,6 +313,8 @@ int main(int argc, char * argv[]){
 
 	/* Init data structures */
 	kdArr = Init(pointArray,totalFeat);
+
+	spLoggerPrintInfo(LOGGER_INFO_DONE_WITH_KDARRAY_INIT);
 	/* Please note that in case an error occurs the logger print is inside the function*/
 	if ( NULL == kdArr) {
 		free(pointArray);
@@ -294,6 +323,7 @@ int main(int argc, char * argv[]){
 		free(pointArrayPerImage);
 		spLoggerDestroy();
 		delete imageProc;
+		printf(EXIT_PROGRAM_MSG);
 		return 0;
 	}
 
@@ -302,6 +332,8 @@ int main(int argc, char * argv[]){
 	ptr = &size;
 
 	tree = init(kdArr,ptr,splitMethod);
+	spLoggerPrintInfo(LOGGER_INFO_DONE_WITH_KDTREE_INIT);
+
 	/* Please note that in case an error occurs the logger print is inside the function*/
 	if (NULL == tree) {
 		spLoggerPrintError(EXIT_FROM_MAIN_MSG,__FILE__, __func__, __LINE__ );
@@ -310,6 +342,7 @@ int main(int argc, char * argv[]){
 		delete imageProc;
 		free(pointArrayPerImage);
 		destroyKdArray(kdArr);
+		printf(EXIT_PROGRAM_MSG);
 		return 0;
 	}
 
@@ -320,7 +353,6 @@ int main(int argc, char * argv[]){
 	while (strcmp(EXIT_PROGRAM,query) != 0){
 
 		spLoggerPrintInfo(LOGGER_INFO_WORKING_ON_NEW_QUERY);
-		//index = extractIndexFromQuery(query);
 		allPicsCount = initCount(numOfPics);
 		/* Please note that in case an error occurs the logger print is inside the function*/
 		if (NULL == allPicsCount) {
@@ -331,6 +363,7 @@ int main(int argc, char * argv[]){
 			free(pointArrayPerImage);
 			destroyKdArray(kdArr);
 			destroyKdTree(tree);
+			printf(EXIT_PROGRAM_MSG);
 			return 0;
 		}
 
@@ -347,10 +380,10 @@ int main(int argc, char * argv[]){
 			destroyKdArray(kdArr);
 			destroyKdTree(tree);
 			destroyCount(allPicsCount);
+			printf(EXIT_PROGRAM_MSG);
 			return 0;
 		}
 		/* for each point of query find kNearestNeighbors */
-
 		for (i = 0; i < numOfFeats; i++){
 				bpq = initBPQ(config);
 
@@ -363,6 +396,7 @@ int main(int argc, char * argv[]){
 					destroyKdArray(kdArr);
 					destroyKdTree(tree);
 					destroyCount(allPicsCount);
+					printf(EXIT_PROGRAM_MSG);
 					return 0;
 				}
 
@@ -377,21 +411,7 @@ int main(int argc, char * argv[]){
 
 		/* Convert from (int *) to (Img *) and order by hits */
 		Img * allPicsCountOrdered = initImgArray(allPicsCount, numOfPics);
-		//todo debug logger
-		/*
-		printf("sorted indexes [");
-		for (i=0; i<numOfPics; i++){
-			printf(" %d ,", allPicsCountOrdered[i].index);
-		}
-		printf("]\n");
 
-		printf("number of hits [");
-		for (i=0; i<numOfPics; i++){
-			printf(" %d ,", allPicsCountOrdered[i].hits);
-		}
-		printf("]\n");
-
-		*/
 
 		/* checks how many pictures were updated during the search */
 		for (i = 0; i < numOfPics; i++ ){
@@ -428,6 +448,7 @@ int main(int argc, char * argv[]){
 					destroyKdTree(tree);
 					destroyCount(allPicsCount);
 					free(allPicsCountOrdered);
+					printf(EXIT_PROGRAM_MSG);
 					return 0;
 				}
 
@@ -455,6 +476,7 @@ int main(int argc, char * argv[]){
 					free(pointArrayPerImage);
 					destroyCount(allPicsCount);
 					free(allPicsCountOrdered);
+					printf(EXIT_PROGRAM_MSG);
 					return 0;
 				}
 				printf("%s\n",imagePathToDisplay);
@@ -472,7 +494,6 @@ int main(int argc, char * argv[]){
 		scanf("%s", query);
 	}
 
-	/* print to console Exiting... */
 	printf(EXIT_PROGRAM_MSG);
 	fflush(stdout);
 	/******************************
