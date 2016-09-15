@@ -205,7 +205,6 @@ SP_BPQUEUE_MSG spBPQueueEnqueue(SPBPQueue source, SPListElement element){
 			return SP_BPQUEUE_SUCCESS;
 		}
 		if (msg == SP_LIST_OUT_OF_MEMORY){
-		//	printf("SP_BPQUEUE_OUT_OF_MEMORY");
 			return SP_BPQUEUE_OUT_OF_MEMORY;
 
 		}
