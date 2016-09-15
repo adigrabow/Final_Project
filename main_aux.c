@@ -40,15 +40,11 @@
 
 SPPoint *extractFromFiles(SPConfig config, int * size){ // WORKING
 
-	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
-	SPPoint* pointArray = (SPPoint*) malloc(sizeof(SPPoint)* 1);
-	/* We return an array of all the points (all features) */
-
-	if (NULL == pointArray) {
-		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEM_FOR_SPPOINT,__FILE__, __func__, __LINE__ );
-		return NULL;
-	}
-
+	/***********************
+	*Variable Declarations
+	************************/
+	SP_CONFIG_MSG msg = NULL;
+	SPPoint* pointArray = NULL;
 	int totalSize = 0; /*size of the point array */
 	int numOfPics = spConfigGetNumOfImages(config, &msg); /* number of images */
 	int dim = spConfigGetPCADim(config,&msg);
@@ -63,16 +59,29 @@ SPPoint *extractFromFiles(SPConfig config, int * size){ // WORKING
 	char * cindex; /* index extracted from file as string */
 	int numOfFeats; /* numOfFeats after convert to int */
 	int index; /* index after convert to int */
+	double * data = NULL;
+	SPPoint point = NULL; /*point extracted */
+	int point_index = 0; /* current index in pointArray */
+	/*********************/
+	
+	msg = SP_CONFIG_SUCCESS;
+	pointArray = (SPPoint*) malloc(sizeof(SPPoint)* 1);
+	/* We return an array of all the points (all features) */
 
-	double * data = (double *) calloc (dim,sizeof(double));
+	if (NULL == pointArray) {
+		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEM_FOR_SPPOINT,__FILE__, __func__, __LINE__ );
+		return NULL;
+	}
+	
+
+	data = (double *) calloc (dim,sizeof(double));
 
 	if (NULL == data) {
 		spLoggerPrintError(LOGGER_ERROR_FAILED_TO_ALLOCATE_MEMORY,__FILE__, __func__, __LINE__ );
 		return NULL;
 	}
 
-	SPPoint point = NULL; /*point extracted */
-	int point_index = 0; /* current index in pointArray */
+
 
 	for (i=0; i<numOfPics; i++){ /* for each image */
 		// create featPath (the string) - for the i-th picture
@@ -107,12 +116,7 @@ SPPoint *extractFromFiles(SPConfig config, int * size){ // WORKING
 			j=0;
 			data[j] = atof(c_double); /* convert to double  and add to data */
 			/* walk through other tokens */
-			//VERSION WITH WHILE LOOP
-			/*while( c_double != NULL ) {
-				j++;
-				c_double = strtok(NULL, s);
-				data[j] = atof(c_double);
-			}*/
+
 
 			//VERSION WITH FOR LOOP
 			for(j=1;j<dim;j++){
@@ -137,7 +141,13 @@ SPPoint *extractFromFiles(SPConfig config, int * size){ // WORKING
 /* Maintain a BPQ of the candidate nearest neighbors, called 'bpq', Set the maximum size of 'bpq' to spKNN*/
 SPBPQueue initBPQ(SPConfig config){
 
+	/***********************
+	*Variable Declarations
+	************************/
 	SPBPQueue bpq = NULL;
+	
+	/***********************/
+
 	bpq = spBPQueueCreate(spConfigGetspKNN(config));
 
 	if (NULL == bpq) {
@@ -156,6 +166,10 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 		return;
 	}
 
+	/***********************
+	*Variable Declarations
+	************************/
+	
 	SPPoint currPoint = kdTreeGetData(currNode);
 	SPListElement element = NULL;
 	kdTree chosenChild = NULL;
@@ -166,7 +180,10 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 	double currNodeVal = kdTreeGetVal(currNode);
 	int currDimension = kdTreeGetDimension(currNode);
 	double queryPointAxisCoor = spPointGetAxisCoor(queryPoint,currDimension );
-
+	double distance = 0.0;
+	
+	/***************************/
+	
 	/*if currNode is leaf:
 	 *  Add the current point to the BPQ. Note that this is a no-op
 	 *  if the * point is not as good as the points we've seen so far.*/
@@ -179,7 +196,7 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 			return;
 		}
 
-		double distance = spPointL2SquaredDistance(currPoint, queryPoint);
+		distance = spPointL2SquaredDistance(currPoint, queryPoint);
 		element = spListElementCreate(spPointGetIndex(currPoint), distance);
 
 		if (NULL == element){
@@ -201,7 +218,6 @@ void kNearestNeighbors(kdTree currNode, SPBPQueue bpq, SPPoint queryPoint){
 			spPointDestroy(currPoint);
 			return;
 		}
-
 
 		spListElementDestroy(element);
 		spPointDestroy(currPoint);
@@ -255,7 +271,7 @@ void addToCount(SPBPQueue bpq,int * allPicsCount){
 }
 
 int extractIndexFromQuery(char * query){ //WORKING
-	//printf("query: ./images/img10.png, printed: %s\n", query);
+	
 	/* extract index of image: between last `/` and last `.` */
 	/* EXAMPLE: "./images/img10.png" ====> 10 */
 	const char s1[LEN_OF_CHAR] = "/"; /* Delimiter 1 */
@@ -267,17 +283,18 @@ int extractIndexFromQuery(char * query){ //WORKING
 	strcpy(tmpQuery,query);
 	/* find last appearance of /  */
 	char * tmp = strtok(tmpQuery, s1);
-	//printf("%s!!",tmp);
+	
+	
 	while( tmp != NULL ) {
 		tmp = strtok(NULL, s1);
 		if (tmp !=NULL){
 			str = tmp;
 		}
 	}
-	/* now str == img10.png */
-	//printf("goal: img10.png, printed: %s\n", str);
+	
+	
 	char * tmp2 = strtok(str, s2); /* get string before . */
-	//printf("goal: img10, printed: %s\n", tmp2);
+	
 
 
 	sscanf(tmp2, "%*[^0123456789]%d", &index);
@@ -286,7 +303,7 @@ int extractIndexFromQuery(char * query){ //WORKING
 
 }
 
-int * initCount(int numOfPics){// WORKING
+int * initCount(int numOfPics){
 	if(numOfPics >= 0){
 		int * result = (int *) calloc(numOfPics,sizeof(int));
 
