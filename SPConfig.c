@@ -32,7 +32,6 @@ struct sp_config_t{
 	int spKNN;
 	bool spMinimalGUI;
 	int spLoggerLevel;
-	//	SP_LOGGER_LEVEL spLoggerLevel;
 	char spLoggerFilename[MAX_STRING_LEN];
 
 };
@@ -55,7 +54,6 @@ struct sp_config_t{
 /*********************
  * image suffix values
  *********************/
-//const char* JPG = ".jpg\0";
 
 #define JPG (".jpg")
 #define PNG (".png")
@@ -205,15 +203,6 @@ int getFirstLetterIndex(char* string);
  * Function Implementation
  * ************************/
 
-/*
-int main() {
-
-	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
-	SPConfig conf = spConfigCreate("tets.txt", &msg);
-	printVariableValuesOfConfig(conf);
-	return 0;
-}*/
-
 
 SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 
@@ -246,13 +235,11 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 	/* for each line in the configuration file*/
 	while(fgets(line,n,configFile) != NULL){
 
-		//printf("line%d=%s\n",configLineCounter, line);
-
 		char* string;
 		const char * delimiter = EQUALS;
 		char value[MAX_STRING_LEN];
 		char variableName[MAX_STRING_LEN];
-		char statusMSG[MAX_STRING_LEN]; //TODO make sure this still works after the change
+		char statusMSG[MAX_STRING_LEN];
 		configLineCounter++;
 		valueFlag = 0;
 
@@ -274,13 +261,9 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 		}
 
 		while(string != NULL ){
-			//printf("start of while - string=%s\n",string);
 
 			/*makes sure the string (value or variable name) doesn't contain any spaces*/
-
-
 			if (false == isStringValid(string)) {
-				//printf("!!!String not valid!!!!string=%s, len=%d\n",string,getStringLength(string));
 				printf(INVALID_CONFIG_LINE_ERROR_MSG, filename, configLineCounter );
 				*msg = SP_CONFIG_INVALID_ARGUMENT;
 				free(config);
@@ -301,9 +284,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 				memset(value, 0, sizeof(value));
 				getCleanWordFromString(string, value);
 
-				//printf("variableName=%s, value=%s\n",variableName,value);
 				assignValueToVariable(config, variableName, value, statusMSG, msg, filename, configLineCounter);
-
 
 				if((strncmp(statusMSG, INTERNAL_STATUS_INVALID_CONFIG_LINE, 19) == 0) ||
 						(strncmp(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET, 17) == 0)){
@@ -350,7 +331,6 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg) {
 
 	fclose(configFile);
 	return config;
-
 
 }
 
@@ -523,31 +503,22 @@ SP_KDTREE_SPLIT_METHOD_TYPE spConfigGetspKDTreeSplitMethod(SPConfig config){
 
 
 /******************
- * Help Functions (need to add description in SPConfig.h)
+ * Help Functions
  * ****************/
 
 void assignValueToVariable(SPConfig config, char* variableName,
 		char* value, char* statusMSG,  SP_CONFIG_MSG* msg, const char* configFileName, int configLineCounter){
 
-	//printf("assignValueToVariable: variableName=%s, variableLen=%d, value=%s, valueLen=%d\n",variableName,getStringLength(variableName), value,getStringLength(value));
 
-	//if(strncmp(variableName, "spImagesDirectory", 17) == 0){
 	if(strcmp(variableName, "spImagesDirectory") == 0){
-		//printf("entered variable is spImagesDirectory\n");
 		strcpy(config->spImagesDirectory, value);
-
-		/* DF: how much memory do you want to set?  sizeof(statusMSG)?
-		 * 		hint - statusMSG is a pointer.						  */
-		//TODO changed to sizeof char
 		memset(statusMSG, 0, MAX_STRING_LEN);
 		strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
 		*msg = SP_CONFIG_SUCCESS;
 		return;
 	}
 
-	//	if(strncmp(variableName,"spImagesPrefix",14) == 0){
 	if(strcmp(variableName,"spImagesPrefix") == 0){
-		//printf("entered variable is spImagesPrefix\n");
 		strcpy(config->spImagesPrefix, value);
 		memset(statusMSG, 0, MAX_STRING_LEN);
 		strcpy(statusMSG, INTERNAL_STATUS_SUCCESS);
@@ -555,11 +526,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		return;
 	}
 
-	//if(strncmp(variableName,"spImagesSuffix",14) == 0){
 	if(strcmp(variableName,"spImagesSuffix") == 0){
-		//printf("entered variable is spImagesSuffix\n");
-
-		//printf("strcmp(value, JPG)=%d\n",strcmp(value, JPG));
 
 		if((strcmp(value, JPG) == 0) || (strcmp(value, PNG) == 0) ||
 				(strcmp(value, BMP) == 0) || (strcmp(value, GIF) == 0)){
@@ -576,10 +543,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		*msg = SP_CONFIG_INVALID_STRING;
 		return;
 	}
-	//if(strncmp(variableName,"spNumOfImages",13) == 0){
 	if(strcmp(variableName,"spNumOfImages") == 0){
-
-		//printf("entered variable is spNumOfImages\n");
 
 		if(isNumericValueValid(value)){
 			int val = atoi(value);
@@ -595,13 +559,11 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		*msg = SP_CONFIG_INVALID_INTEGER;
 		memset(statusMSG, 0, MAX_STRING_LEN);
 		strcpy(statusMSG, INTERNAL_STATUS_CONSTRAIT_NOT_MET);
-		printf(CONSTRAIT_NOT_MET_ERROR_MSG, configFileName, configLineCounter );//TODO change line to be in config file
+		printf(CONSTRAIT_NOT_MET_ERROR_MSG, configFileName, configLineCounter );
 		return;
 	}
 
-//	if(strncmp(variableName,"spPCADimension", 14) == 0){
 	if(strcmp(variableName,"spPCADimension") == 0){
-		//printf("entered variable is spPCADimension\n");
 
 		if(isNumericValueValid(value)){
 			int val = atoi(value);
@@ -621,9 +583,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		return;
 	}
 
-//	if(strncmp(variableName,"spPCAFilename",13) == 0){
 	if(strcmp(variableName,"spPCAFilename") == 0){
-		//printf("entered variable is spPCAFilename\n");
 
 		strcpy(config->spPCAFilename,value);
 		memset(statusMSG, 0, MAX_STRING_LEN);
@@ -632,10 +592,8 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		return;
 	}
 
-//	if(strncmp(variableName,"spNumOfFeatures",15) == 0){
 	if(strcmp(variableName,"spNumOfFeatures") == 0){
 
-		//printf("entered variable is spNumOfFeatures\n");
 
 		if(isNumericValueValid(value)){
 			int val = atoi(value);
@@ -655,10 +613,8 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		return;
 	}
 
-//	if(strncmp(variableName,"spExtractionMode",16) == 0){
 	if(strcmp(variableName,"spExtractionMode") == 0){
 
-		//printf("entered variable is spExtractionMode\n");
 
 		if(strncmp(value,"true",4)==0){
 			config->spExtractionMode = true;
@@ -681,9 +637,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 
 	}
 
-//	if(strncmp(variableName,"spNumOfSimilarImages",20) == 0){
 	if(strcmp(variableName,"spNumOfSimilarImages") == 0){
-		//printf("entered variable is spNumOfSimilarImages\n");
 
 		int val = atoi(value);
 		if(val > 0){
@@ -700,11 +654,8 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		return;
 	}
 
-//	if(strncmp(variableName,"spKDTreeSplitMethod",19) == 0){ //TODO
-	if(strcmp(variableName,"spKDTreeSplitMethod") == 0){ //TODO
-//		printf("entered variable is spKDTreeSplitMethod\n");
+	if(strcmp(variableName,"spKDTreeSplitMethod") == 0){
 
-		//if(strncmp(value, "RANDOM",6) == 0){
 		if(strcmp(value, "RANDOM") == 0){
 			config->spKDTreeSplitMethod = RANDOM;
 			memset(statusMSG, 0, MAX_STRING_LEN);
@@ -712,7 +663,6 @@ void assignValueToVariable(SPConfig config, char* variableName,
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
-		//if(strncmp(value, "MAX_SPREAD",10) == 0){
 		if(strcmp(value, "MAX_SPREAD") == 0){
 			config->spKDTreeSplitMethod = MAX_SPREAD;
 			memset(statusMSG, 0, MAX_STRING_LEN);
@@ -720,7 +670,6 @@ void assignValueToVariable(SPConfig config, char* variableName,
 			*msg = SP_CONFIG_SUCCESS;
 			return;
 		}
-		//if(strncmp(value, "INCREMENTAL",11) == 0){
 		if(strcmp(value, "INCREMENTAL") == 0){
 			config->spKDTreeSplitMethod = INCREMENTAL;
 			memset(statusMSG, 0, MAX_STRING_LEN);
@@ -737,9 +686,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 
 	}
 
-//	if(strncmp(variableName,"spKNN",5) == 0){
 	if(strcmp(variableName,"spKNN") == 0){
-		//printf("entered variable is spKNN\n");
 
 		int val = atoi(value);
 		if(val > 0){
@@ -756,9 +703,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		return;
 	}
 
-//	if(strncmp(variableName,"spMinimalGUI",12) == 0){
 	if(strcmp(variableName,"spMinimalGUI") == 0){
-	//	printf("entered variable is spMinimalGUI\n");
 
 		if(strncmp(value,"true",4) == 0){
 			config->spMinimalGUI = true;
@@ -781,9 +726,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 
 	}
 
-//	if(strncmp(variableName,"spLoggerFilename",16) == 0){
 	if(strcmp(variableName,"spLoggerFilename") == 0){
-	//	printf("entered variable is spLoggerFilename\n");
 
 		strcpy(config->spLoggerFilename,value);
 		memset(statusMSG, 0, MAX_STRING_LEN);
@@ -792,9 +735,7 @@ void assignValueToVariable(SPConfig config, char* variableName,
 		return;
 	}
 
-//	if(strncmp(variableName,"spLoggerLevel",13) == 0){
 	if(strcmp(variableName,"spLoggerLevel") == 0){
-	//	printf("entered variable is spLoggerLevel\n");
 
 		int val = atoi(value);
 		if(val == 1 || val == 2 || val == 3 || val == 4){
@@ -819,9 +760,6 @@ void assignValueToVariable(SPConfig config, char* variableName,
 	*msg = SP_CONFIG_INVALID_STRING;
 	return;
 
-	/*
-	int spLoggerLevel; default value= 3 {1,2,3,4} 1:error, 2:warning, 3:info, 4:debug
-	 */
 }
 
 bool isLineValid(char* line){
@@ -836,7 +774,6 @@ bool isLineValid(char* line){
 
 
 
-//TODO make sure stringLen is correct (i replaced strlen() with this small loop)
 
 int getStringLength (char* string) {
 
@@ -855,12 +792,10 @@ int getStringLength (char* string) {
 
 void getCleanWordFromString(char* string, char* word) {
 
-	//printf("getCleanWordFromString: string=%s#,word=%s#\n",string,word);
 	int stringLen = getStringLength(string);
 	int firstLetterIndex = getFirstLetterIndex(string);
 	int lastLetterIndex = stringLen - 1;
 
-	//printf("getCleanWordFromString: stringLen=%d,firstLetterIndex=%d,lastLetterIndex=%d\n",stringLen,firstLetterIndex,lastLetterIndex);
 
 	/*find the last character that is different from WHITESPACE or TAB*/
 	for (int t = firstLetterIndex; t < stringLen; t++) {
@@ -869,43 +804,21 @@ void getCleanWordFromString(char* string, char* word) {
 			break;
 		}
 	}
-	//printf("getCleanWordFromString: lastLetterIndex=%d\n",lastLetterIndex);
-	//lastLetterIndex = lastLetterIndex - 1;
 
 	int newWordLengthe = lastLetterIndex - firstLetterIndex + 1;
 
 	for (int j = 0; j < newWordLengthe; j++) {
-		//printf("*(string + firstLetterIndex)=%c\n",*(string + firstLetterIndex) );
 		if (*(string + firstLetterIndex) != '\n') {
 			*(word + j) = *(string + firstLetterIndex);
 			firstLetterIndex++;
 		}
 
-		//printf("*(word + j)=%c\n",*(word + j));
 
 	}
 
-/*	int k = 0;
-	char c = *(word + k);
-
-	while (c != '\0') {
-		printf("the %d letter=%c\n",k, *(word + k));
-		k++;
-		c = *(word + k);
-	}
-
-	for(int k = 0; k < newWordLengthe+1; k++) {
-
-		if (*(word + k) == ' ') {
-			printf("the %d letter is WHITESPACE\n",k);
-		}
-
-	}*/
-
-	//printf("word=%s#\n",word);
 }
 
-int getFirstLetterIndex(char* string) { //TODO add description
+int getFirstLetterIndex(char* string) {
 
 	int firstLetterIndex = 0;
 	int i = 0;
@@ -925,7 +838,6 @@ int getFirstLetterIndex(char* string) { //TODO add description
 
 bool isStringValid(char* string){
 
-	//printf("isStringValid: string=%s#####\n",string);
 
 	if(string == NULL){
 		return false;
@@ -943,28 +855,11 @@ bool isStringValid(char* string){
 		}
 	}
 
-	//printf("isStringValid: firstLetterIndex=%d, lastLetterIndex=%d, firstSpaceIndex=%d \n",firstLetterIndex,lastLetterIndex,firstSpaceIndex);
 
 	if (firstSpaceIndex <= firstLetterIndex) {
 		return true;
 	}
 
-
-
-
-
-/*	for (int i = firstSpaceIndex; i <= lastLetterIndex; i++) {
-
-//		if(*(string + i) == WHITESPACE || *(string + i) == TAB ) {
-		if((*(string + i)) == TAB || (*(string + i)) == WHITESPACE) {
-			printf("isStringValid: *(string + %d) == WHITESPACE || *(string + %d) == TAB\n",i,i);
-		}
-
-		if (*(string + i) != TAB && *(string + i) != WHITESPACE
-				&& *(string + i) != NEW_LINE && *(string + i) != VERTICAL ) {
-			return false;
-		}
-	}*/
 
 	for (int i = firstSpaceIndex; i <= lastLetterIndex; i++) {
 		if ((*(string + i) >= 33) && *(string + i) <= 126 ){
@@ -972,7 +867,6 @@ bool isStringValid(char* string){
 		}
 
 	}
-
 
 	return true;
 
@@ -1043,8 +937,6 @@ void assignDefaultValues(SPConfig config){
 
 void printVariableValuesOfConfig(SPConfig config){
 	SP_CONFIG_MSG msg = SP_CONFIG_SUCCESS;
-	/*	char imagePath[1024];
-	char pcaPath[1024];*/
 
 	printf("***********printing config values***********\n");
 	if(config == NULL){
@@ -1052,20 +944,17 @@ void printVariableValuesOfConfig(SPConfig config){
 		return;
 	}
 
-	/*SP_CONFIG_MSG getImagePathMSG = spConfigGetImagePath(imagePath, config, 1);
-	SP_CONFIG_MSG getPCAPathMSG = spConfigGetPCAPath(pcaPath, config);*/
-
 	printf("spImagesDirectory = %s\n",spConfigGetspImageDirectory(config));
 	printf("spImagesPrefix = %s\n",spConfigGetspImagesPrefix(config));
 	printf("spImagesSuffix = %s\n",spConfigGetspImagesSuffix(config));
-	printf("spNumOfImages = %d\n",spConfigGetNumOfImages(config, &msg)); //X
-	printf("spPCADimension = %d\n",spConfigGetPCADim(config, &msg)); //V
-	printf("spPCAFilename = %s\n",spConfigGetspPCAFilename(config)); //V
-	printf("spNumOfFeatures = %d\n",spConfigGetNumOfFeatures(config, &msg)); //V
-	printf("spNumOfSimilarImages = %d\n",spConfigGetspNumOfSimilarImages(config)); //V
-	printf("spKNN = %d\n",spConfigGetspKNN(config)); //V
-	printf("spLoggerLevel = %d\n",spConfigGetspLoggerLevel(config)); //V
-	printf("spLoggerFilename = %s\n",spConfigGetspLoggerFilename(config)); //V
+	printf("spNumOfImages = %d\n",spConfigGetNumOfImages(config, &msg));
+	printf("spPCADimension = %d\n",spConfigGetPCADim(config, &msg));
+	printf("spPCAFilename = %s\n",spConfigGetspPCAFilename(config));
+	printf("spNumOfFeatures = %d\n",spConfigGetNumOfFeatures(config, &msg));
+	printf("spNumOfSimilarImages = %d\n",spConfigGetspNumOfSimilarImages(config));
+	printf("spKNN = %d\n",spConfigGetspKNN(config));
+	printf("spLoggerLevel = %d\n",spConfigGetspLoggerLevel(config));
+	printf("spLoggerFilename = %s\n",spConfigGetspLoggerFilename(config));
 
 
 	if(spConfigGetspKDTreeSplitMethod(config) == MAX_SPREAD){
@@ -1097,8 +986,6 @@ void printVariableValuesOfConfig(SPConfig config){
 
 }
 
-/* Added by Maayan */
-/* =============== */
 SP_CONFIG_MSG spConfigGetImagePathFeat(char* imagePath, const SPConfig config,
 		int index){
 	if(imagePath == NULL || config == NULL){
@@ -1129,13 +1016,9 @@ SPConfig spConfigAlternativeCreate(){
 	strcpy(config->spImagesPrefix, "img");
 	strcpy(config->spImagesSuffix, ".png");
 	config->spNumOfImages = 17;
-	//config->spNumOfImages = 3;
-	//config->spPCADimension = 28;
 	config->spPCADimension = 2;
 	strcpy(config->spPCAFilename, "adigrabow.yml");
-	//config->spNumOfFeatures = 20;
 	config->spNumOfFeatures = 2;
-	//config->spExtractionMode = true;
 	config->spExtractionMode = false;
 	config->spNumOfSimilarImages = 2;
 	config->spKDTreeSplitMethod = MAX_SPREAD;
