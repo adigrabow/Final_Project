@@ -52,7 +52,7 @@ SPPoint *extractFromFiles(SPConfig config, int * size){ // WORKING
 	char featPath [_MAX]; /* will contain the path for image .feat */
 	FILE *fp; /* the file created .feat per image */
 	int i,j,k;
-	const char s[LEN_OF_CHAR] = "#"; /* Delimiter */
+	const char delimiter[LEN_OF_CHAR] = "#"; /* Delimiter */
 	char line [_MAX]; /* line extracted from file.feat */
 	char * c_double; /* for each double value - to be converted to double */
 	char * cNumofFeat; /* numOfFeat extracted from file as string */
@@ -95,9 +95,9 @@ SPPoint *extractFromFiles(SPConfig config, int * size){ // WORKING
 
 		/* Get parameters from first line - index and actual number of extracted features  */
 		fgets(line, _MAX, fp);
-		cNumofFeat = strtok(line, s);
+		cNumofFeat = strtok(line, delimiter);
 		numOfFeats = atoi(cNumofFeat); /* convert to int */
-		cindex = strtok(NULL, s);
+		cindex = strtok(NULL, delimiter);
 		index = atoi(cindex); /* convert to int */
 
 		totalSize += numOfFeats; /* increase size for realloc */
@@ -112,7 +112,7 @@ SPPoint *extractFromFiles(SPConfig config, int * size){ // WORKING
 			// consider that every line ends with # also
 			/* extract all data (double) */
 			fgets(line, _MAX, fp); /* get line */
-			c_double = strtok(line, s); /* get first double */
+			c_double = strtok(line, delimiter); /* get first double */
 			j=0;
 			data[j] = atof(c_double); /* convert to double  and add to data */
 			/* walk through other tokens */
@@ -120,7 +120,7 @@ SPPoint *extractFromFiles(SPConfig config, int * size){ // WORKING
 
 			//VERSION WITH FOR LOOP
 			for(j=1;j<dim;j++){
-				c_double = strtok(NULL, s);
+				c_double = strtok(NULL, delimiter);
 				data[j] = atof(c_double);
 			}
 
@@ -274,30 +274,30 @@ int extractIndexFromQuery(char * query){ //WORKING
 	
 	/* extract index of image: between last `/` and last `.` */
 	/* EXAMPLE: "./images/img10.png" ====> 10 */
-	const char s1[LEN_OF_CHAR] = "/"; /* Delimiter 1 */
-	const char s2[LEN_OF_CHAR] = "."; /* Delimiter 2 */
+	const char firstDelimiter[LEN_OF_CHAR] = "/"; /* Delimiter 1 */
+	const char secondDelimiter[LEN_OF_CHAR] = "."; /* Delimiter 2 */
 
 	int index; /* output */
 	char * str;
 	char tmpQuery[_MAX];
 	strcpy(tmpQuery,query);
 	/* find last appearance of /  */
-	char * tmp = strtok(tmpQuery, s1);
+	char * tokenFromPath = strtok(tmpQuery, firstDelimiter);
 	
 	
-	while( tmp != NULL ) {
-		tmp = strtok(NULL, s1);
-		if (tmp !=NULL){
-			str = tmp;
+	while( tokenFromPath != NULL ) {
+		tokenFromPath = strtok(NULL, firstDelimiter);
+		if (tokenFromPath !=NULL){
+			str = tokenFromPath;
 		}
 	}
 	
 	
-	char * tmp2 = strtok(str, s2); /* get string before . */
+	char * extractIndexFromString = strtok(str, secondDelimiter); /* get string before . */
 	
 
 
-	sscanf(tmp2, "%*[^0123456789]%d", &index);
+	sscanf(extractIndexFromString, "%*[^0123456789]%d", &index);
 	return index;
 
 
@@ -347,7 +347,6 @@ int compareHits (const void * a, const void * b){//WORKING
 
 
 	else return (f1->index - f2->index);
-	//return(f2->hits - f1->hits);
 
 }
 

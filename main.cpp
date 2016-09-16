@@ -53,7 +53,8 @@ int main(int argc, char * argv[]){
 	char imagePathToDisplay [_MAX] = {0}; /* saves the image path that was created in  spConfigGetImagePath */
 	char query[_MAX] = {0}; /* the program will ask the user to enter an image path  */
 	int size = 0; 
-	int * ptr = NULL;
+	int * pointerToPreviousIndex = NULL;
+	int imageIndex = 0;
 	
 	
 	char DEBUG_NUM_OF_PICS[_MAX] = {0};
@@ -329,9 +330,9 @@ int main(int argc, char * argv[]){
 
 	srand(time(NULL)); // requested once in program. for RANDOM mode in split tree //
 	size = -1; // according to moab the first split needs to start from index 0 in incremental //
-	ptr = &size;
+	pointerToPreviousIndex = &size;
 
-	tree = init(kdArr,ptr,splitMethod);
+	tree = init(kdArr,pointerToPreviousIndex,splitMethod);
 	spLoggerPrintInfo(LOGGER_INFO_DONE_WITH_KDTREE_INIT);
 
 	/* Please note that in case an error occurs the logger print is inside the function*/
@@ -400,10 +401,10 @@ int main(int argc, char * argv[]){
 					return 0;
 				}
 
-				SPPoint p = spPointCopy(pointArrayPerImageQuery[i]);
-				kNearestNeighbors(tree,bpq,p);
+				SPPoint pointFromQuery = spPointCopy(pointArrayPerImageQuery[i]);
+				kNearestNeighbors(tree,bpq,pointFromQuery);
 				addToCount(bpq,allPicsCount);
-				spPointDestroy(p);
+				spPointDestroy(pointFromQuery);
 				spBPQueueDestroy(bpq);
 
 		}
@@ -461,8 +462,8 @@ int main(int argc, char * argv[]){
 			printf(BEST_CANIDATES,query);
 			fflush(stdout);
 			for (i = 0; i < numOfSimilarImagesToDisplay; i++){ // display the first numOfSimilarImages images in stdout
-				k = allPicsCountOrdered[i].index; // get the img index
-				msg = spConfigGetImagePath(imagePathToDisplay, config, k);// create path
+				imageIndex = allPicsCountOrdered[i].index; // get the img index
+				msg = spConfigGetImagePath(imagePathToDisplay, config, imageIndex);// create path
 
 				if (SP_CONFIG_SUCCESS != msg) {
 					spLoggerPrintError(LOGGER_ERROR_FAILED_TO_EXTRACT_IMAGE_PATH,
